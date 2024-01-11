@@ -42,9 +42,6 @@ public class TokenServiceImpl implements TokenService {
     @Inject
     Redis redis;
 
-    @Inject
-    ObjectMapper objectMapper;
-
     @Override
     public Uni<String> getToken(AuthParameters authParameters) {
         KeyToken keyToken = new KeyToken();
@@ -77,13 +74,9 @@ public class TokenServiceImpl implements TokenService {
         Uni<Response> response = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
         return response.onItem().transformToUni(res -> {
             Token token = res.readEntity(Token.class);
-            try {
-                String tokenJson = objectMapper.writeValueAsString(token);
-                redis.send(Request.cmd(Command.create("SET")).arg(keyToken.toString()).arg(tokenJson).arg("EX").arg(token.getExpiresIn()));
-                return Uni.createFrom().item(token);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
+            redis.send(Request.cmd(Command.create("SET")).arg(keyToken.toString()).arg(token.getAccessToken()).arg("EX").arg(token.getExpiresIn()));
+            return Uni.createFrom().item(token);
+
         });
     }
 

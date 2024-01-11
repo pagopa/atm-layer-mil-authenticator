@@ -27,7 +27,7 @@ public class KeyToken {
 
     @Override
     public String toString() {
-        return this.acquirerId.concat("_").concat(channel).concat("_").concat(terminalId).concat("_");
+        return this.acquirerId.concat("_").concat(channel).concat("_").concat(terminalId);
         //.concat(transactionId).concat("_")
         //.fiscalCode.concat("_")
         //.concat(requestId)
