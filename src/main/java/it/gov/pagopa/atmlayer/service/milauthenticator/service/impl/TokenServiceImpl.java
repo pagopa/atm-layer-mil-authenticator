@@ -1,0 +1,70 @@
+package it.gov.pagopa.atmlayer.service.milauthenticator.service.impl;
+
+import io.smallrye.mutiny.Uni;
+import it.gov.pagopa.atmlayer.service.milauthenticator.client.MilWebClient;
+import it.gov.pagopa.atmlayer.service.milauthenticator.configuration.RequestHeaders;
+import it.gov.pagopa.atmlayer.service.milauthenticator.enums.RequiredVariables;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.AuthParameters;
+import it.gov.pagopa.atmlayer.service.milauthenticator.properties.AuthProperties;
+import it.gov.pagopa.atmlayer.service.milauthenticator.service.TokenService;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@ApplicationScoped
+@Slf4j
+public class TokenServiceImpl implements TokenService {
+
+    @Inject
+    @RestClient
+    MilWebClient milWebClient;
+
+    @Inject
+    AuthProperties authProperties;
+
+    @Override
+    public String getToken() {
+        return null;
+    }
+
+    @Override
+    public Uni<Response> generateToken(AuthParameters authParameters) {
+        RequestHeaders headers = prepareAuthHeaders(authParameters);
+        String body = prepareAuthBody();
+
+        log.info("request ready");
+        return milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
+    }
+
+    private String prepareAuthBody() {
+        Map<String, String> bodyParams = new HashMap<>();
+        bodyParams.put(RequiredVariables.CLIENT_ID.getValue(), authProperties.getClientId());
+        bodyParams.put(RequiredVariables.CLIENT_SECRET.getValue(), authProperties.getClientSecret());
+        bodyParams.put(RequiredVariables.GRANT_TYPE.getValue(), authProperties.getGrantType());
+        String body = bodyParams.entrySet().stream()
+                .map(entry -> URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8) + "="
+                        + URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8))
+                .collect(Collectors.joining("&"));
+        return body;
+    }
+
+    private static RequestHeaders prepareAuthHeaders(AuthParameters authParameters) {
+        RequestHeaders headers = new RequestHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setRequestId(authParameters.getRequestId());
+        headers.setAcquirerId(authParameters.getAcquirerId());
+        headers.setChannel(authParameters.getChannel());
+        headers.setTerminalId(authParameters.getTerminalId());
+        headers.setFiscalCode(authParameters.getFiscalCode());
+        return headers;
+    }
+}
