@@ -1,10 +1,17 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smallrye.mutiny.Uni;
+import io.vertx.redis.client.Command;
+import io.vertx.redis.client.Redis;
+import io.vertx.redis.client.Request;
 import it.gov.pagopa.atmlayer.service.milauthenticator.client.MilWebClient;
 import it.gov.pagopa.atmlayer.service.milauthenticator.configuration.RequestHeaders;
 import it.gov.pagopa.atmlayer.service.milauthenticator.enums.RequiredVariables;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.AuthParameters;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.KeyToken;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.Token;
 import it.gov.pagopa.atmlayer.service.milauthenticator.properties.AuthProperties;
 import it.gov.pagopa.atmlayer.service.milauthenticator.service.TokenService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -18,6 +25,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -31,18 +39,52 @@ public class TokenServiceImpl implements TokenService {
     @Inject
     AuthProperties authProperties;
 
-    @Override
-    public String getToken() {
-        return null;
-    }
+    @Inject
+    Redis redis;
+
+    @Inject
+    ObjectMapper objectMapper;
 
     @Override
-    public Uni<Response> generateToken(AuthParameters authParameters) {
+    public Uni<String> getToken(AuthParameters authParameters) {
+        KeyToken keyToken = new KeyToken();
+        keyToken.setChannel(authParameters.getChannel());
+        keyToken.setAcquirerId(authParameters.getAcquirerId());
+        keyToken.setTerminalId(authParameters.getTerminalId());
+        return Uni.createFrom().completionStage(redis.send(Request.cmd(Command.create("GET")).arg(keyToken.toString())).toCompletionStage())
+                .onItem().transformToUni(response -> {
+                    if (response != null) {
+                        String token = response.toString();
+                        if (token != null && !token.isEmpty()) {
+                            log.info("Token found in cache");
+                            return Uni.createFrom().item(token);
+                        }
+                    }
+                    return generateToken(authParameters, keyToken)
+                            .onItem()
+                            .transformToUni(tokenGenerated -> Uni.createFrom().item(tokenGenerated.getAccessToken()));
+                });
+    }
+
+
+    @Override
+    public Uni<Token> generateToken(AuthParameters authParameters, KeyToken keyToken) {
         RequestHeaders headers = prepareAuthHeaders(authParameters);
         String body = prepareAuthBody();
 
         log.info("request ready");
-        return milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
+
+        Uni<Response> response = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
+        return response.onItem().transformToUni(res -> {
+            Token token = res.readEntity(Token.class);
+            try {
+                String tokenJson = objectMapper.writeValueAsString(token);
+                redis.send(Request.cmd(Command.create("SET")).arg(keyToken.toString()).arg(tokenJson).arg("EX").arg(token.getExpiresIn()));
+                return Uni.createFrom().item(token);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private String prepareAuthBody() {
