@@ -23,13 +23,12 @@ public class KeyToken {
 
 //    private String transactionId;
 
-//    private String fiscalCode;
+
 
     @Override
     public String toString() {
         return this.acquirerId.concat("_").concat(channel).concat("_").concat(terminalId);
         //.concat(transactionId).concat("_")
-        //.fiscalCode.concat("_")
         //.concat(requestId)
     }
 }
