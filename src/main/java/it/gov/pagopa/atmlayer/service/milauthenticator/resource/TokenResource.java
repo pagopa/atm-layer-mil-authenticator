@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.milauthenticator.resource;
 
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.AuthParameters;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.TokenDTO;
 import it.gov.pagopa.atmlayer.service.milauthenticator.service.TokenService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -24,12 +25,13 @@ public class TokenResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<String> getToken(@HeaderParam("RequestId") String requestId,
-                                @HeaderParam("AcquirerId") String acquirerId,
-                                @HeaderParam("Channel") String channel,
-                                @HeaderParam("TerminalId") String terminalId,
-                                @HeaderParam("Fiscalcode") String fiscalCode,
-                                @HeaderParam("TransactionId") String transactionId) {
+    public Uni<TokenDTO> getToken(@HeaderParam("RequestId") String requestId,
+                                  @HeaderParam("AcquirerId") String acquirerId,
+                                  @HeaderParam("Channel") String channel,
+                                  @HeaderParam("TerminalId") String terminalId,
+                                  @HeaderParam("Fiscalcode") String fiscalCode,
+                                  @HeaderParam("TransactionId") String transactionId) {
+
         return this.tokenService.getToken(new AuthParameters(requestId, acquirerId, channel, terminalId, fiscalCode, transactionId));
     }
 }

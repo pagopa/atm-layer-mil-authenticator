@@ -10,6 +10,7 @@ import it.gov.pagopa.atmlayer.service.milauthenticator.enums.RequiredVariables;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.AuthParameters;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.KeyToken;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.Token;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.TokenDTO;
 import it.gov.pagopa.atmlayer.service.milauthenticator.properties.AuthProperties;
 import it.gov.pagopa.atmlayer.service.milauthenticator.service.TokenService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -40,7 +41,7 @@ public class TokenServiceImpl implements TokenService {
     Redis redis;
 
     @Override
-    public Uni<String> getToken(AuthParameters authParameters) {
+    public Uni<TokenDTO> getToken(AuthParameters authParameters) {
         KeyToken keyToken = new KeyToken();
         keyToken.setChannel(authParameters.getChannel());
         keyToken.setAcquirerId(authParameters.getAcquirerId());
@@ -49,17 +50,22 @@ public class TokenServiceImpl implements TokenService {
         keyToken.setTransactionId(authParameters.getTransactionId());
         return Uni.createFrom().completionStage(redis.send(Request.cmd(Command.create("GET")).arg(keyToken.toString())).toCompletionStage())
                 .onItem().transformToUni(response -> {
+                    TokenDTO tokenDTO = new TokenDTO();
                     if (response != null) {
                         String token = response.toString();
                         if (token != null && !token.isEmpty()) {
                             log.info("Token found in cache");
-                            return Uni.createFrom().item(token);
+                            tokenDTO.setAccessToken(token);
+                            return Uni.createFrom().item(tokenDTO);
                         }
                     }
                     log.info("Token not found in cache");
                     return generateToken(authParameters, keyToken)
                             .onItem()
-                            .transformToUni(tokenGenerated -> Uni.createFrom().item(tokenGenerated.getAccessToken()));
+                            .transformToUni(tokenGenerated -> {
+                                tokenDTO.setAccessToken(tokenGenerated.getAccessToken());
+                                return Uni.createFrom().item(tokenDTO);
+                            });
                 });
     }
 
