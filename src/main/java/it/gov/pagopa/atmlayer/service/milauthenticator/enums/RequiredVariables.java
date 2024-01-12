@@ -1,6 +1,5 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.enums;
 
-import jakarta.ws.rs.core.MediaType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

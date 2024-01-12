@@ -1,10 +1,6 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.model;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -23,10 +19,25 @@ public class KeyToken {
 
     private String transactionId;
 
-
-
     @Override
     public String toString() {
-        return this.acquirerId.concat("_").concat(channel).concat("_").concat(terminalId).concat("_").concat(transactionId).concat("_").concat(requestId);
+        StringBuilder keyTokenBuilder = new StringBuilder();
+
+        appendIfNotNull(keyTokenBuilder, acquirerId);
+        appendIfNotNull(keyTokenBuilder, channel);
+        appendIfNotNull(keyTokenBuilder, terminalId);
+        appendIfNotNull(keyTokenBuilder, transactionId);
+        appendIfNotNull(keyTokenBuilder, requestId);
+
+        return keyTokenBuilder.toString();
+    }
+
+    private void appendIfNotNull(StringBuilder builder, String value) {
+        if (value != null && !value.isEmpty()) {
+            if (builder.length() > 0) {
+                builder.append("_");
+            }
+            builder.append(value);
+        }
     }
 }
