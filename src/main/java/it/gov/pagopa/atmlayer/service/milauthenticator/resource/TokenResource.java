@@ -11,7 +11,9 @@ import it.gov.pagopa.atmlayer.service.milauthenticator.model.Token;
 import it.gov.pagopa.atmlayer.service.milauthenticator.service.TokenService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
@@ -29,7 +31,12 @@ public class TokenResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<String> getToken() {
-        return this.tokenService.getToken(new AuthParameters());
+    public Uni<String> getToken(@HeaderParam("RequestId") String requestId,
+                                @HeaderParam("AcquirerId") String acquirerId,
+                                @HeaderParam("Channel") String channel,
+                                @HeaderParam("TerminalId") String terminalId,
+                                @HeaderParam("Fiscalcode") String fiscalCode,
+                                @HeaderParam("TransactionId") String transactionId) {
+        return this.tokenService.getToken(new AuthParameters(requestId, acquirerId, channel, terminalId, fiscalCode, transactionId));
     }
 }

@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class KeyToken {
 
-//    private String requestId;
+    private String requestId;
 
     private String terminalId;
 
@@ -21,14 +21,12 @@ public class KeyToken {
 
     private String channel;
 
-//    private String transactionId;
+    private String transactionId;
 
 
 
     @Override
     public String toString() {
-        return this.acquirerId.concat("_").concat(channel).concat("_").concat(terminalId);
-        //.concat(transactionId).concat("_")
-        //.concat(requestId)
+        return this.acquirerId.concat("_").concat(channel).concat("_").concat(terminalId).concat("_").concat(transactionId).concat("_").concat(requestId);
     }
 }

@@ -48,6 +48,8 @@ public class TokenServiceImpl implements TokenService {
         keyToken.setChannel(authParameters.getChannel());
         keyToken.setAcquirerId(authParameters.getAcquirerId());
         keyToken.setTerminalId(authParameters.getTerminalId());
+        keyToken.setRequestId(authParameters.getRequestId());
+        keyToken.setTransactionId(authParameters.getTransactionId());
         return Uni.createFrom().completionStage(redis.send(Request.cmd(Command.create("GET")).arg(keyToken.toString())).toCompletionStage())
                 .onItem().transformToUni(response -> {
                     if (response != null) {
@@ -57,6 +59,7 @@ public class TokenServiceImpl implements TokenService {
                             return Uni.createFrom().item(token);
                         }
                     }
+                    log.info("Token not found in cache");
                     return generateToken(authParameters, keyToken)
                             .onItem()
                             .transformToUni(tokenGenerated -> Uni.createFrom().item(tokenGenerated.getAccessToken()));
@@ -66,15 +69,16 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public Uni<Token> generateToken(AuthParameters authParameters, KeyToken keyToken) {
+        log.info("mil request starting");
         RequestHeaders headers = prepareAuthHeaders(authParameters);
         String body = prepareAuthBody();
-
         log.info("request ready");
 
         Uni<Response> response = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
         return response.onItem().transformToUni(res -> {
             Token token = res.readEntity(Token.class);
             redis.send(Request.cmd(Command.create("SET")).arg(keyToken.toString()).arg(token.getAccessToken()).arg("EX").arg(token.getExpiresIn()));
+            log.info("request completed");
             return Uni.createFrom().item(token);
 
         });

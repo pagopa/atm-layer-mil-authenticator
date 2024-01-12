@@ -15,4 +15,5 @@ public class AuthParameters {
     private String channel;
     private String terminalId;
     private String fiscalCode;
+    private String transactionId;
 }

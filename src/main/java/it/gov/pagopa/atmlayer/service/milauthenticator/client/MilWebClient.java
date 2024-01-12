@@ -23,6 +23,6 @@ public interface MilWebClient {
                                          @HeaderParam("AcquirerId") String acquirerId,
                                          @HeaderParam("Channel") String channel,
                                          @HeaderParam("TerminalId") String terminalId,
-                                         @HeaderParam("cf") String fiscalCode,
+                                         @HeaderParam("FiscalCode") String fiscalCode,
                                          String body);
 }
