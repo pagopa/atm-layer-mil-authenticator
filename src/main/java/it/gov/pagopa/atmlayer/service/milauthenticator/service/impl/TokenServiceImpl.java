@@ -1,7 +1,5 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smallrye.mutiny.Uni;
 import io.vertx.redis.client.Command;
 import io.vertx.redis.client.Redis;
@@ -25,7 +23,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
