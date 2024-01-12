@@ -20,6 +20,21 @@ secretProviderClass:
   name: atm-layer-mil-authenticator-secrets
   env: prod
 
+milAuthenticator:
+  environment: prod
+  executionMode: READ_WRITE
+  logLevel: INFO
+  applicationBasePath: /api/v1/mil-authenticator
+  swaggerPath: /swagger-ui
+  healthPath: /health/v1/mil-authenticator
+  openapiPath: /health/v1/mil-authenticator
+
+redis:
+  credentialsSecretName: "pagopa-dev-atm-layer-mil-authenticator-redis"
+  credentialsSecretKeys:
+    host: REDIS_HOST
+    port: REDIS_PORT
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -47,7 +62,7 @@ deployment:
   name: pagopa-prod-atm-layer-mil-authenticator
   annotation:
     reloader.stakater.com/auto: "true"
-    secret.reloader.stakater.com/reload: pagopa-prod-atm-layer-mil-authenticator-camunda
+    secret.reloader.stakater.com/reload: pagopa-dev-atm-layer-mil-authenticator-redis
 
 service:
   name: pagopa-prod-atm-layer-mil-authenticator
