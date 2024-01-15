@@ -25,13 +25,12 @@ public class TokenResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<TokenDTO> getToken(@HeaderParam("RequestId") String requestId,
-                                  @HeaderParam("AcquirerId") String acquirerId,
+    public Uni<TokenDTO> getToken(@HeaderParam("AcquirerId") String acquirerId,
                                   @HeaderParam("Channel") String channel,
                                   @HeaderParam("TerminalId") String terminalId,
                                   @HeaderParam("FiscalCode") String fiscalCode,
                                   @HeaderParam("TransactionId") String transactionId) {
 
-        return this.tokenService.getToken(new AuthParameters(requestId, acquirerId, channel, terminalId, fiscalCode, transactionId));
+        return this.tokenService.getToken(new AuthParameters(acquirerId, channel, terminalId, fiscalCode, transactionId));
     }
 }

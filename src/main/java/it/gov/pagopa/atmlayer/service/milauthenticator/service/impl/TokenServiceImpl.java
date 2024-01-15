@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -102,7 +103,7 @@ public class TokenServiceImpl implements TokenService {
     private static RequestHeaders prepareAuthHeaders(AuthParameters authParameters) {
         RequestHeaders headers = new RequestHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.setRequestId(authParameters.getRequestId());
+        headers.setRequestId(UUID.randomUUID().toString());
         headers.setAcquirerId(authParameters.getAcquirerId());
         headers.setChannel(authParameters.getChannel());
         headers.setTerminalId(authParameters.getTerminalId());
