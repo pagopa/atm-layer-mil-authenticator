@@ -71,7 +71,7 @@ service:
 
 ingress:
   enabled: true
-  name: pagopa-dev-atm-layer-mil-authenticator
+  name: pagopa-prod-atm-layer-mil-authenticator
   className: ""
   annotations: 
     kubernetes.io/ingress.class: "alb"
