@@ -58,7 +58,6 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.redis.credentialsSecretName }}
                   key: {{ .Values.redis.credentialsSecretKeys.port }}
-
           volumeMounts:
           - name: secrets-store-inline
             mountPath: "/mnt/secrets-store"
