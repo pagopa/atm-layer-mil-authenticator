@@ -96,6 +96,9 @@ public class TokenServiceImpl implements TokenService {
     }
 
 
+
+
+
     private String prepareAuthBody() {
         Map<String, String> bodyParams = new HashMap<>();
         bodyParams.put(RequiredVariables.CLIENT_ID.getValue(), authProperties.getClientId());
