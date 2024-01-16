@@ -28,6 +28,7 @@ milAuthenticator:
   swaggerPath: /swagger-ui
   healthPath: /health/v1/mil-authenticator
   openapiPath: /health/v1/mil-authenticator
+  appName: mil-authenticator
 
 redis:
   credentialsSecretName: "pagopa-uat-atm-layer-mil-authenticator-redis"
