@@ -1,18 +1,12 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.resource;
 
 import io.smallrye.mutiny.Uni;
-import it.gov.pagopa.atmlayer.service.milauthenticator.enums.AppErrorCodeEnum;
-import it.gov.pagopa.atmlayer.service.milauthenticator.enums.AppErrorType;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.AuthParameters;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.ErrorResponse;
-import it.gov.pagopa.atmlayer.service.milauthenticator.model.TokenDTO;
 import it.gov.pagopa.atmlayer.service.milauthenticator.service.TokenService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -38,13 +32,13 @@ public class TokenResource {
                                   @HeaderParam("TransactionId") String transactionId) {
 
         return this.tokenService.getToken(
-                AuthParameters.builder()
-                        .requestId(requestId)
-                        .acquirerId(acquirerId)
-                        .channel(channel)
-                        .terminalId(terminalId)
-                        .transactionId(transactionId)
-                        .build())
+                        AuthParameters.builder()
+                                .requestId(requestId)
+                                .acquirerId(acquirerId)
+                                .channel(channel)
+                                .terminalId(terminalId)
+                                .transactionId(transactionId)
+                                .build())
                 .onItem().transform(tokenDTO -> Response.ok(tokenDTO).build())
                 .onFailure().recoverWithItem(exception -> {
                     ErrorResponse errorResponse = ErrorResponse.builder()

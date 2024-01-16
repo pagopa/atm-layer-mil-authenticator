@@ -1,7 +1,7 @@
 apiVersion: v2
 name: atm-layer-mil-authenticator
 description: |
-  Helm Chart for WF Process ATM Layer
+  Helm Chart for MIL AUTHENTICATOR ATM Layer
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
