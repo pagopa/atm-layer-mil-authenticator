@@ -20,7 +20,6 @@ public class AuthParameters {
     private String channel;
     @NonNull
     private String terminalId;
-    @NonNull
     private String fiscalCode;
     @NonNull
     private String transactionId;

@@ -42,12 +42,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public Uni<TokenDTO> getToken(AuthParameters authParameters) {
-        KeyToken keyToken = new KeyToken();
-        keyToken.setChannel(authParameters.getChannel());
-        keyToken.setAcquirerId(authParameters.getAcquirerId());
-        keyToken.setTerminalId(authParameters.getTerminalId());
-        keyToken.setRequestId(authParameters.getRequestId());
-        keyToken.setTransactionId(authParameters.getTransactionId());
+        KeyToken keyToken = getKeyToken(authParameters);
         return Uni.createFrom().completionStage(redis.send(Request.cmd(Command.create("GET")).arg(keyToken.toString())).toCompletionStage())
                 .onItem().transform(response -> {
                     TokenDTO tokenDTO = new TokenDTO();
@@ -69,7 +64,6 @@ public class TokenServiceImpl implements TokenService {
         keyToken.setChannel(authParameters.getChannel());
         keyToken.setAcquirerId(authParameters.getAcquirerId());
         keyToken.setTerminalId(authParameters.getTerminalId());
-        keyToken.setRequestId(authParameters.getRequestId());
         keyToken.setTransactionId(authParameters.getTransactionId());
         return keyToken;
     }

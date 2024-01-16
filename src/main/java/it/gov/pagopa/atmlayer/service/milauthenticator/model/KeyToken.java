@@ -9,8 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 public class KeyToken {
 
-    private String requestId;
-
     private String terminalId;
 
     private String acquirerId;
@@ -27,7 +25,6 @@ public class KeyToken {
         appendIfNotNull(keyTokenBuilder, channel);
         appendIfNotNull(keyTokenBuilder, terminalId);
         appendIfNotNull(keyTokenBuilder, transactionId);
-        appendIfNotNull(keyTokenBuilder, requestId);
 
         return keyTokenBuilder.toString();
     }

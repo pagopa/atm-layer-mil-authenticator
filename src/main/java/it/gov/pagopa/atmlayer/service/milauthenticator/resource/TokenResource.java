@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.milauthenticator.resource;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.AuthParameters;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.ErrorResponse;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.TokenDTO;
 import it.gov.pagopa.atmlayer.service.milauthenticator.service.TokenService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -25,15 +26,13 @@ public class TokenResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Response> getToken(@HeaderParam("RequestId") String requestId,
-                                  @HeaderParam("AcquirerId") String acquirerId,
+    public Uni<Response> getToken(@HeaderParam("AcquirerId") String acquirerId,
                                   @HeaderParam("Channel") String channel,
                                   @HeaderParam("TerminalId") String terminalId,
                                   @HeaderParam("TransactionId") String transactionId) {
 
         return this.tokenService.getToken(
                         AuthParameters.builder()
-                                .requestId(requestId)
                                 .acquirerId(acquirerId)
                                 .channel(channel)
                                 .terminalId(terminalId)
@@ -54,5 +53,22 @@ public class TokenResource {
                             .type(MediaType.APPLICATION_JSON)
                             .build();
                 });
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<TokenDTO> createToken(@HeaderParam("AcquirerId") String acquirerId,
+                                     @HeaderParam("Channel") String channel,
+                                     @HeaderParam("TerminalId") String terminalId,
+                                     @HeaderParam("FiscalCode") String fiscalCode,
+                                     @HeaderParam("TransactionId") String transactionId) {
+
+        return this.tokenService.generateToken(AuthParameters.builder()
+                .acquirerId(acquirerId)
+                .channel(channel)
+                .terminalId(terminalId)
+                .fiscalCode(fiscalCode)
+                .transactionId(transactionId)
+                .build());
     }
 }
