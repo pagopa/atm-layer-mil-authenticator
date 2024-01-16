@@ -48,8 +48,6 @@ spec:
               value: "{{ .Values.milAuthenticator.healthPath }}"
             - name: MIL_AUTHENTICATOR_OPENAPI_PATH
               value: "{{ .Values.milAuthenticator.openapiPath }}"
-            - name: APP_NAME
-              value: "{{ .Values.milAuthenticator.appName }}"
             - name: REDIS_HOST
               valueFrom:
                 secretKeyRef:
