@@ -43,12 +43,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public Uni<TokenDTO> getToken(AuthParameters authParameters) {
-        KeyToken keyToken = new KeyToken();
-        keyToken.setChannel(authParameters.getChannel());
-        keyToken.setAcquirerId(authParameters.getAcquirerId());
-        keyToken.setTerminalId(authParameters.getTerminalId());
-        keyToken.setRequestId(authParameters.getRequestId());
-        keyToken.setTransactionId(authParameters.getTransactionId());
+        KeyToken keyToken = getKeyToken(authParameters);
         return Uni.createFrom().completionStage(redis.send(Request.cmd(Command.create("GET")).arg(keyToken.toString())).toCompletionStage())
                 .onItem().transformToUni(response -> {
                     TokenDTO tokenDTO = new TokenDTO();
@@ -61,7 +56,7 @@ public class TokenServiceImpl implements TokenService {
                         }
                     }
                     log.info("Token not found in cache");
-                    return generateToken(authParameters, keyToken)
+                    return generateToken(authParameters)
                             .onItem()
                             .transformToUni(tokenGenerated -> {
                                 tokenDTO.setAccessToken(tokenGenerated.getAccessToken());
@@ -70,20 +65,33 @@ public class TokenServiceImpl implements TokenService {
                 });
     }
 
+    private static KeyToken getKeyToken(AuthParameters authParameters) {
+        KeyToken keyToken = new KeyToken();
+        keyToken.setChannel(authParameters.getChannel());
+        keyToken.setAcquirerId(authParameters.getAcquirerId());
+        keyToken.setTerminalId(authParameters.getTerminalId());
+        keyToken.setRequestId(authParameters.getRequestId());
+        keyToken.setTransactionId(authParameters.getTransactionId());
+        return keyToken;
+    }
+
 
     @Override
-    public Uni<Token> generateToken(AuthParameters authParameters, KeyToken keyToken) {
+    public Uni<TokenDTO> generateToken(AuthParameters authParameters) {
+        KeyToken keyToken = getKeyToken(authParameters);
         log.info("mil request starting");
         RequestHeaders headers = prepareAuthHeaders(authParameters);
         String body = prepareAuthBody();
         log.info("request ready");
 
         Uni<Response> response = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
+        TokenDTO tokenDTO = new TokenDTO();
         return response.onItem().transformToUni(res -> {
             Token token = res.readEntity(Token.class);
             redis.send(Request.cmd(Command.create("SET")).arg(keyToken.toString()).arg(token.getAccessToken()).arg("EX").arg(token.getExpiresIn()));
             log.info("request completed");
-            return Uni.createFrom().item(token);
+            tokenDTO.setAccessToken(token.getAccessToken());
+            return Uni.createFrom().item(tokenDTO);
 
         });
     }

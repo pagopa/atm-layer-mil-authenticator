@@ -31,6 +31,6 @@ public class TokenResource {
                                   @HeaderParam("FiscalCode") String fiscalCode,
                                   @HeaderParam("TransactionId") String transactionId) {
 
-        return this.tokenService.getToken(new AuthParameters(acquirerId, channel, terminalId, fiscalCode, transactionId));
+        return this.tokenService.generateToken(new AuthParameters(acquirerId, channel, terminalId, fiscalCode, transactionId));
     }
 }
