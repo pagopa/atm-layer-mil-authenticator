@@ -85,16 +85,16 @@ public class TokenServiceImpl implements TokenService {
         log.info("request ready");
 
         Uni<Response> response = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
-        TokenDTO tokenDTO = new TokenDTO();
-        return response.onItem().transformToUni(res -> {
+        return response.onItem().transform(res -> {
             Token token = res.readEntity(Token.class);
             redis.send(Request.cmd(Command.create("SET")).arg(keyToken.toString()).arg(token.getAccessToken()).arg("EX").arg(token.getExpiresIn()));
             log.info("request completed");
+            TokenDTO tokenDTO = new TokenDTO();
             tokenDTO.setAccessToken(token.getAccessToken());
-            return Uni.createFrom().item(tokenDTO);
-
+            return tokenDTO;
         });
     }
+
 
     private String prepareAuthBody() {
         Map<String, String> bodyParams = new HashMap<>();
