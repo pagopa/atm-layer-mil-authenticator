@@ -27,15 +27,4 @@ public interface MilWebClient {
                                          @NotNull @HeaderParam("TerminalId") String terminalId,
                                          @HeaderParam("FiscalCode") String fiscalCode,
                                          @NotNull String body);
-
-    @ClientExceptionMapper
-    static RuntimeException toException(Response response) {
-        if (response.getStatus() == 400) {
-            return new RuntimeException("Malformed Request");
-        }
-        else if (response.getStatus() != 200) {
-            return new RuntimeException("Connection with MIL failed");
-        }
-        return null;
-    }
 }

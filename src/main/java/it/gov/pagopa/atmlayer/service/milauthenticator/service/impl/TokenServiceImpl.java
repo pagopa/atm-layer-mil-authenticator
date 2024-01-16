@@ -6,11 +6,10 @@ import io.vertx.redis.client.Redis;
 import io.vertx.redis.client.Request;
 import it.gov.pagopa.atmlayer.service.milauthenticator.client.MilWebClient;
 import it.gov.pagopa.atmlayer.service.milauthenticator.configuration.RequestHeaders;
+import it.gov.pagopa.atmlayer.service.milauthenticator.enums.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.milauthenticator.enums.RequiredVariables;
-import it.gov.pagopa.atmlayer.service.milauthenticator.model.AuthParameters;
-import it.gov.pagopa.atmlayer.service.milauthenticator.model.KeyToken;
-import it.gov.pagopa.atmlayer.service.milauthenticator.model.Token;
-import it.gov.pagopa.atmlayer.service.milauthenticator.model.TokenDTO;
+import it.gov.pagopa.atmlayer.service.milauthenticator.exception.AtmLayerException;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.*;
 import it.gov.pagopa.atmlayer.service.milauthenticator.properties.AuthProperties;
 import it.gov.pagopa.atmlayer.service.milauthenticator.service.TokenService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -45,23 +44,18 @@ public class TokenServiceImpl implements TokenService {
     public Uni<TokenDTO> getToken(AuthParameters authParameters) {
         KeyToken keyToken = getKeyToken(authParameters);
         return Uni.createFrom().completionStage(redis.send(Request.cmd(Command.create("GET")).arg(keyToken.toString())).toCompletionStage())
-                .onItem().transformToUni(response -> {
+                .onItem().transform(response -> {
                     TokenDTO tokenDTO = new TokenDTO();
                     if (response != null) {
                         String token = response.toString();
                         if (token != null && !token.isEmpty()) {
                             log.info("Token found in cache");
                             tokenDTO.setAccessToken(token);
-                            return Uni.createFrom().item(tokenDTO);
+                            return tokenDTO;
                         }
                     }
                     log.info("Token not found in cache");
-                    return generateToken(authParameters)
-                            .onItem()
-                            .transformToUni(tokenGenerated -> {
-                                tokenDTO.setAccessToken(tokenGenerated.getAccessToken());
-                                return Uni.createFrom().item(tokenDTO);
-                            });
+                    throw new AtmLayerException(Response.Status.NOT_FOUND, AppErrorCodeEnum.TOKEN_NOT_FOUND);
                 });
     }
 
@@ -70,7 +64,6 @@ public class TokenServiceImpl implements TokenService {
         keyToken.setChannel(authParameters.getChannel());
         keyToken.setAcquirerId(authParameters.getAcquirerId());
         keyToken.setTerminalId(authParameters.getTerminalId());
-        keyToken.setRequestId(authParameters.getRequestId());
         keyToken.setTransactionId(authParameters.getTransactionId());
         return keyToken;
     }
