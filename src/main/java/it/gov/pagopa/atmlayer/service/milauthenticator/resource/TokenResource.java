@@ -1,6 +1,7 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.resource;
 
 import io.smallrye.mutiny.Uni;
+import it.gov.pagopa.atmlayer.service.milauthenticator.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.AuthParameters;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.ErrorResponse;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.TokenDTO;
@@ -13,6 +14,7 @@ import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import static it.gov.pagopa.atmlayer.service.milauthenticator.enums.AppErrorCodeEnum.ATML_MIL_AUTH_500;
 import static it.gov.pagopa.atmlayer.service.milauthenticator.enums.AppErrorCodeEnum.TOKEN_NOT_FOUND;
 
 @ApplicationScoped
@@ -40,14 +42,24 @@ public class TokenResource {
                                 .build())
                 .onItem().transform(tokenDTO -> Response.ok(tokenDTO).build())
                 .onFailure().recoverWithItem(exception -> {
-                    ErrorResponse errorResponse = ErrorResponse.builder()
-                            .type(TOKEN_NOT_FOUND.getType().name())
-                            .title(TOKEN_NOT_FOUND.getErrorCode())
-                            .status(500)
-                            .detail(TOKEN_NOT_FOUND.getErrorMessage())
-                            .instance(TOKEN_NOT_FOUND.name())
-                            .build();
-
+                    ErrorResponse errorResponse;
+                    if(exception instanceof AtmLayerException && ((AtmLayerException) exception).getStatusCode() == Response.Status.NOT_FOUND.getStatusCode()) {
+                        errorResponse = ErrorResponse.builder()
+                                .type(TOKEN_NOT_FOUND.getType().name())
+                                .title(TOKEN_NOT_FOUND.getErrorCode())
+                                .status(404)
+                                .detail(TOKEN_NOT_FOUND.getErrorMessage())
+                                .instance(TOKEN_NOT_FOUND.name())
+                                .build();
+                    }else {
+                        errorResponse = ErrorResponse.builder()
+                                .type(ATML_MIL_AUTH_500.getType().name())
+                                .title(ATML_MIL_AUTH_500.getErrorCode())
+                                .status(500)
+                                .detail(ATML_MIL_AUTH_500.getErrorMessage())
+                                .instance(ATML_MIL_AUTH_500.name())
+                                .build();
+                    }
                     return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                             .entity(errorResponse)
                             .type(MediaType.APPLICATION_JSON)
@@ -57,7 +69,7 @@ public class TokenResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<TokenDTO> createToken(@HeaderParam("AcquirerId") String acquirerId,
+    public Uni<Response> createToken(@HeaderParam("AcquirerId") String acquirerId,
                                      @HeaderParam("Channel") String channel,
                                      @HeaderParam("TerminalId") String terminalId,
                                      @HeaderParam("FiscalCode") String fiscalCode,
@@ -69,6 +81,21 @@ public class TokenResource {
                 .terminalId(terminalId)
                 .fiscalCode(fiscalCode)
                 .transactionId(transactionId)
-                .build());
+                .build()).onItem().transform(tokenDTO -> Response.ok(tokenDTO).build())
+                .onFailure().recoverWithItem(exception -> {
+
+                    ErrorResponse errorResponse = ErrorResponse.builder()
+                                .type(ATML_MIL_AUTH_500.getType().name())
+                                .title(ATML_MIL_AUTH_500.getErrorCode())
+                                .status(500)
+                                .detail(ATML_MIL_AUTH_500.getErrorMessage())
+                                .instance(ATML_MIL_AUTH_500.name())
+                                .build();
+                    
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                            .entity(errorResponse)
+                            .type(MediaType.APPLICATION_JSON)
+                            .build();
+                });
     }
 }
