@@ -1,7 +1,13 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.client;
 
+import io.quarkus.rest.client.reactive.ClientExceptionMapper;
+import io.smallrye.common.constraint.NotNull;
 import io.smallrye.mutiny.Uni;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
@@ -14,11 +20,22 @@ public interface MilWebClient {
     @Path("/mil-auth/token")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Response> getTokenFromMil(@HeaderParam("Content_Type") String contentType,
-                                         @HeaderParam("RequestId") String requestId,
-                                         @HeaderParam("AcquirerId") String acquirerId,
-                                         @HeaderParam("Channel") String channel,
-                                         @HeaderParam("TerminalId") String terminalId,
+    Uni<Response> getTokenFromMil(@NotNull @HeaderParam("Content_Type") String contentType,
+                                         @NotNull @HeaderParam("RequestId") String requestId,
+                                         @NotNull @HeaderParam("AcquirerId") String acquirerId,
+                                         @NotNull @HeaderParam("Channel") String channel,
+                                         @NotNull @HeaderParam("TerminalId") String terminalId,
                                          @HeaderParam("FiscalCode") String fiscalCode,
-                                         String body);
+                                         @NotNull String body);
+
+    @ClientExceptionMapper
+    static RuntimeException toException(Response response) {
+        if (response.getStatus() == 400) {
+            return new RuntimeException("Malformed Request");
+        }
+        else if (response.getStatus() != 200) {
+            return new RuntimeException("Connection with MIL failed");
+        }
+        return null;
+    }
 }
