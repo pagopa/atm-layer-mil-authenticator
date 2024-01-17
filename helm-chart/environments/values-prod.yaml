@@ -77,7 +77,7 @@ service:
   port: 8080
 
 ingress:
-  enabled: true
+  enabled: false
   name: pagopa-prod-atm-layer-mil-authenticator
   className: ""
   annotations: 
