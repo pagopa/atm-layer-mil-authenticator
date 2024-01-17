@@ -32,8 +32,8 @@ milAuthenticator:
 redis:
   credentialsSecretName: "pagopa-prod-atm-layer-mil-authenticator-redis"
   credentialsSecretKeys:
-    host: REDIS_HOST
-    port: REDIS_PORT
+    host: host
+    port: port
 
 serviceAccount:
   # Specifies whether a service account should be created
