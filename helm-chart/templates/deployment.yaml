@@ -48,6 +48,8 @@ spec:
               value: "{{ .Values.milAuthenticator.healthPath }}"
             - name: MIL_AUTHENTICATOR_OPENAPI_PATH
               value: "{{ .Values.milAuthenticator.openapiPath }}"
+            - name: MIL_AUTHENTICATOR_AUTH_CLIENT_CREDENTIALS
+              value: "{{ .Values.milAuth.clientCredentials }}"
             - name: REDIS_HOST
               valueFrom:
                 secretKeyRef:
@@ -58,6 +60,16 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.redis.credentialsSecretName }}
                   key: {{ .Values.redis.credentialsSecretKeys.port }}
+            - name: MIL_AUTHENTICATOR_MIL_AUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.milAuth.credentialsSecretName }}
+                  key: {{ .Values.milAuth.credentialsSecretKeys.clientId }}
+            - name: MIL_AUTHENTICATOR_MIL_AUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.milAuth.credentialsSecretName }}
+                  key: {{ .Values.milAuth.credentialsSecretKeys.clientSecret }}
           volumeMounts:
           - name: secrets-store-inline
             mountPath: "/mnt/secrets-store"

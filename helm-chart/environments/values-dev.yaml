@@ -29,6 +29,13 @@ milAuthenticator:
   healthPath: /health/v1/mil-authenticator
   openapiPath: /health/v1/mil-authenticator
 
+milAuth:
+  clientCredentials: client_credentials
+  credentialsSecretName: "pagopa-dev-atm-layer-mil-authenticator-mil-auth"
+  credentialsSecretKeys:
+    clientId: CLIENT_ID
+    clientSecret: CLIENT_SECRET
+
 redis:
   credentialsSecretName: pagopa-dev-atm-layer-mil-authenticator-redis
   credentialsSecretKeys:
@@ -62,7 +69,7 @@ deployment:
   name: pagopa-dev-atm-layer-mil-authenticator
   annotation:
     reloader.stakater.com/auto: "true"
-    secret.reloader.stakater.com/reload: pagopa-dev-atm-layer-mil-authenticator-redis
+    secret.reloader.stakater.com/reload: pagopa-dev-atm-layer-mil-authenticator-redis, pagopa-dev-atm-layer-mil-authenticator-mil-auth
 
 service:
   name: pagopa-dev-atm-layer-mil-authenticator
