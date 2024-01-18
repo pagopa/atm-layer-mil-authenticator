@@ -21,6 +21,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -76,12 +77,26 @@ public class TokenServiceImpl implements TokenService {
         RequestHeaders headers = prepareAuthHeaders(authParameters);
         String body = prepareAuthBody();
         log.info("request ready");
-
-        Uni<Response> response = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
+        Uni<Response> response = null;
+        try {
+            response = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
+        } catch (Exception e) {
+            log.info(Arrays.toString(e.getStackTrace()));
+        }
+        log.info("chiamata al mil effettuata");
+        if (response == null){
+            log.info("ERROR chiamata al mil con response null!");
+            return null;
+        }
         return response.onItem().transform(res -> {
             Token token = res.readEntity(Token.class);
-            redis.send(Request.cmd(Command.create("SET")).arg(keyToken.toString()).arg(token.getAccessToken()).arg("EX").arg(token.getExpiresIn()));
-            log.info("request completed");
+            log.info("redis connection starting");
+            try {
+                redis.send(Request.cmd(Command.create("SET")).arg(keyToken.toString()).arg(token.getAccessToken()).arg("EX").arg(token.getExpiresIn()));
+            } catch (Exception e) {
+                log.info(Arrays.toString(e.getStackTrace()));
+            }
+            log.info("redis request completed");
             TokenDTO tokenDTO = new TokenDTO();
             tokenDTO.setAccessToken(token.getAccessToken());
             return tokenDTO;
