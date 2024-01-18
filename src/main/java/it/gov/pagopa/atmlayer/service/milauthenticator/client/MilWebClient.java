@@ -5,6 +5,8 @@ import io.smallrye.common.constraint.NotNull;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.milauthenticator.enums.AppErrorCodeEnum;
 import it.gov.pagopa.atmlayer.service.milauthenticator.exception.AtmLayerException;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.Token;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.TokenDTO;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
@@ -22,11 +24,11 @@ public interface MilWebClient {
     @Path("/mil-auth/token")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    Uni<Response> getTokenFromMil(@NotNull @HeaderParam("Content_Type") String contentType,
-                                         @NotNull @HeaderParam("RequestId") String requestId,
-                                         @NotNull @HeaderParam("AcquirerId") String acquirerId,
-                                         @NotNull @HeaderParam("Channel") String channel,
-                                         @NotNull @HeaderParam("TerminalId") String terminalId,
-                                         @HeaderParam("FiscalCode") String fiscalCode,
-                                         @NotNull String body);
+    Uni<Token> getTokenFromMil(@NotNull @HeaderParam("Content_Type") String contentType,
+                               @NotNull @HeaderParam("RequestId") String requestId,
+                               @NotNull @HeaderParam("AcquirerId") String acquirerId,
+                               @NotNull @HeaderParam("Channel") String channel,
+                               @NotNull @HeaderParam("TerminalId") String terminalId,
+                               @HeaderParam("FiscalCode") String fiscalCode,
+                               @NotNull String body);
 }

@@ -78,18 +78,15 @@ public class TokenServiceImpl implements TokenService {
         RequestHeaders headers = prepareAuthHeaders(authParameters);
         String body = prepareAuthBody();
         log.info("request ready");
-        Uni<Response> responseUni = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
+        Uni<Token> tokenUni = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
 
-        return responseUni.onFailure()
+        return tokenUni.onFailure()
                 .recoverWithUni(failure -> {
                     log.error(failure.getMessage());
                     return Uni.createFrom().failure(new AtmLayerException("MIL unavailable", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.MIL_UNAVAILABLE));
                 })
                 .onItem()
-                .transformToUni(response -> {
-                    int statusCode = response.getStatus();
-                    log.info("Status code: " + statusCode);
-                    Token token = response.readEntity(Token.class);
+                .transformToUni(token -> {
                     log.info("redis connection starting");
 
 
