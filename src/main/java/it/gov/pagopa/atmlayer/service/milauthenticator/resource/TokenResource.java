@@ -36,7 +36,7 @@ public class TokenResource {
     @APIResponse(responseCode = "200", description = "Operazione eseguita con successo. Il processo è terminato.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenDTO.class)))
     @APIResponse(responseCode = "404", description = "Token non trovato nella cache con i valori di input inseriti", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Errore generico.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    public Uni<Response> getToken(@HeaderParam("AcquirerId") String acquirerId,
+    public Uni<TokenDTO> getToken(@HeaderParam("AcquirerId") String acquirerId,
                                   @HeaderParam("Channel") String channel,
                                   @HeaderParam("TerminalId") String terminalId,
                                   @HeaderParam("TransactionId") String transactionId) {
@@ -47,30 +47,7 @@ public class TokenResource {
                                 .channel(channel)
                                 .terminalId(terminalId)
                                 .transactionId(transactionId)
-                                .build())
-                .onItem().transform(tokenDTO -> Response.ok(tokenDTO).build())
-                .onFailure().recoverWithItem(exception -> {
-                    ErrorResponse errorResponse;
-                    if(exception instanceof AtmLayerException && ((AtmLayerException) exception).getStatusCode() == Response.Status.NOT_FOUND.getStatusCode()) {
-                        errorResponse = ErrorResponse.builder()
-                                .type(TOKEN_NOT_FOUND.getType().name())
-                                .status(404)
-                                .detail(TOKEN_NOT_FOUND.getErrorMessage())
-                                .instance(TOKEN_NOT_FOUND.name())
-                                .build();
-                    }else {
-                        errorResponse = ErrorResponse.builder()
-                                .type(ATML_MIL_AUTH_500.getType().name())
-                                .status(500)
-                                .detail(ATML_MIL_AUTH_500.getErrorMessage())
-                                .instance(ATML_MIL_AUTH_500.name())
-                                .build();
-                    }
-                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                            .entity(errorResponse)
-                            .type(MediaType.APPLICATION_JSON)
-                            .build();
-                });
+                                .build());
     }
 
     @POST
