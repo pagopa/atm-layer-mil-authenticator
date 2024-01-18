@@ -81,7 +81,7 @@ public class TokenServiceImpl implements TokenService {
         try {
             response = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
         } catch (Exception e) {
-            log.info(Arrays.toString(e.getStackTrace()));
+            log.info("ERROR MIL - " + Arrays.toString(e.getStackTrace()));
         }
         log.info("chiamata al mil effettuata");
         if (response == null){
@@ -94,7 +94,7 @@ public class TokenServiceImpl implements TokenService {
             try {
                 redis.send(Request.cmd(Command.create("SET")).arg(keyToken.toString()).arg(token.getAccessToken()).arg("EX").arg(token.getExpiresIn()));
             } catch (Exception e) {
-                log.info(Arrays.toString(e.getStackTrace()));
+                log.info("ERROR REDIS - " + Arrays.toString(e.getStackTrace()));
             }
             log.info("redis request completed");
             TokenDTO tokenDTO = new TokenDTO();
