@@ -3,6 +3,8 @@ package it.gov.pagopa.atmlayer.service.milauthenticator.client;
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 import io.smallrye.common.constraint.NotNull;
 import io.smallrye.mutiny.Uni;
+import it.gov.pagopa.atmlayer.service.milauthenticator.enums.AppErrorCodeEnum;
+import it.gov.pagopa.atmlayer.service.milauthenticator.exception.AtmLayerException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;

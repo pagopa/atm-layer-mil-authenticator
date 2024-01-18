@@ -13,14 +13,11 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Getter
 @Builder
 @Jacksonized
-@JsonPropertyOrder({"type", "title", "status", "detail", "instance"})
+@JsonPropertyOrder({"type", "status", "detail", "instance"})
 @RegisterForReflection
 public class ErrorResponse {
 
     private String type;
-
-    @Schema(example = "Internal Server Error")
-    private String title;
 
     @Schema(example = "500")
     private int status;

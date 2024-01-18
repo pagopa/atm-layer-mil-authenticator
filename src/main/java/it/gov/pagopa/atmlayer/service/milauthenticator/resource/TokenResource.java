@@ -54,7 +54,6 @@ public class TokenResource {
                     if(exception instanceof AtmLayerException && ((AtmLayerException) exception).getStatusCode() == Response.Status.NOT_FOUND.getStatusCode()) {
                         errorResponse = ErrorResponse.builder()
                                 .type(TOKEN_NOT_FOUND.getType().name())
-                                .title(TOKEN_NOT_FOUND.getErrorCode())
                                 .status(404)
                                 .detail(TOKEN_NOT_FOUND.getErrorMessage())
                                 .instance(TOKEN_NOT_FOUND.name())
@@ -62,7 +61,6 @@ public class TokenResource {
                     }else {
                         errorResponse = ErrorResponse.builder()
                                 .type(ATML_MIL_AUTH_500.getType().name())
-                                .title(ATML_MIL_AUTH_500.getErrorCode())
                                 .status(500)
                                 .detail(ATML_MIL_AUTH_500.getErrorMessage())
                                 .instance(ATML_MIL_AUTH_500.name())
@@ -80,7 +78,7 @@ public class TokenResource {
     @Operation(summary = "Restituisce il token creato e lo salva nella cache", description = "Chiama il MIL, CREATE token nella cache Redis e restituisce il token creato")
     @APIResponse(responseCode = "200", description = "Operazione eseguita con successo. Il processo è terminato.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenDTO.class)))
     @APIResponse(responseCode = "500", description = "Errore generico.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    public Uni<Response> createToken(@HeaderParam("AcquirerId") String acquirerId,
+    public Uni<TokenDTO> createToken(@HeaderParam("AcquirerId") String acquirerId,
                                      @HeaderParam("Channel") String channel,
                                      @HeaderParam("TerminalId") String terminalId,
                                      @HeaderParam("FiscalCode") String fiscalCode,
@@ -92,21 +90,6 @@ public class TokenResource {
                 .terminalId(terminalId)
                 .fiscalCode(fiscalCode)
                 .transactionId(transactionId)
-                .build()).onItem().transform(tokenDTO -> Response.ok(tokenDTO).build())
-                .onFailure().recoverWithItem(exception -> {
-
-                    ErrorResponse errorResponse = ErrorResponse.builder()
-                                .type(ATML_MIL_AUTH_500.getType().name())
-                                .title(ATML_MIL_AUTH_500.getErrorCode())
-                                .status(500)
-                                .detail(ATML_MIL_AUTH_500.getErrorMessage())
-                                .instance(ATML_MIL_AUTH_500.name())
-                                .build();
-                    
-                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                            .entity(errorResponse)
-                            .type(MediaType.APPLICATION_JSON)
-                            .build();
-                });
+                .build());
     }
 }

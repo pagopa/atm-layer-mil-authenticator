@@ -1,6 +1,8 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.service.impl;
 
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
+import io.vertx.core.Future;
 import io.vertx.redis.client.Command;
 import io.vertx.redis.client.Redis;
 import io.vertx.redis.client.Request;
@@ -69,7 +71,6 @@ public class TokenServiceImpl implements TokenService {
         return keyToken;
     }
 
-
     @Override
     public Uni<TokenDTO> generateToken(AuthParameters authParameters) {
         KeyToken keyToken = getKeyToken(authParameters);
@@ -77,34 +78,34 @@ public class TokenServiceImpl implements TokenService {
         RequestHeaders headers = prepareAuthHeaders(authParameters);
         String body = prepareAuthBody();
         log.info("request ready");
-        Uni<Response> response = null;
-        try {
-            response = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
-        } catch (Exception e) {
-            log.info("ERROR MIL - " + Arrays.toString(e.getStackTrace()));
-        }
-        log.info("chiamata al mil effettuata");
-        if (response == null){
-            log.info("ERROR chiamata al mil con response null!");
-            return null;
-        }
-        return response.onItem().transform(res -> {
-            Token token = res.readEntity(Token.class);
-            log.info("redis connection starting");
-            try {
-                redis.send(Request.cmd(Command.create("SET")).arg(keyToken.toString()).arg(token.getAccessToken()).arg("EX").arg(token.getExpiresIn()));
-            } catch (Exception e) {
-                log.info("ERROR REDIS - " + Arrays.toString(e.getStackTrace()));
-            }
-            log.info("redis request completed");
-            TokenDTO tokenDTO = new TokenDTO();
-            tokenDTO.setAccessToken(token.getAccessToken());
-            return tokenDTO;
-        });
+        Uni<Response> responseUni = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
+
+        return responseUni.onFailure()
+                .recoverWithUni(failure -> {
+                    log.error(failure.getMessage());
+                    return Uni.createFrom().failure(new AtmLayerException("MIL unavailable", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.MIL_UNAVAILABLE));
+                })
+                .onItem()
+                .transformToUni(response -> {
+                    int statusCode = response.getStatus();
+                    log.info("Status code: " + statusCode);
+                    Token token = response.readEntity(Token.class);
+                    log.info("redis connection starting");
+
+
+                    redis.send(Request.cmd(Command.create("SET"))
+                            .arg(keyToken.toString())
+                            .arg(token.getAccessToken())
+                            .arg("EX")
+                            .arg(token.getExpiresIn()));
+
+
+                    log.info("redis request completed");
+                    TokenDTO tokenDTO = new TokenDTO();
+                    tokenDTO.setAccessToken(token.getAccessToken());
+                    return Uni.createFrom().item(tokenDTO);
+                });
     }
-
-
-
 
 
     private String prepareAuthBody() {
