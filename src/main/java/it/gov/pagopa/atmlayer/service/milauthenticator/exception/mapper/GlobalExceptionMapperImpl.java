@@ -33,7 +33,7 @@ public class GlobalExceptionMapperImpl {
     public RestResponse<ErrorResponse> genericExceptionMapper(Exception exception) {
         String message = "Generic Error";
         logger.error("Generic error found: ", exception);
-        return buildErrorResponse(message);
+        return buildErrorResponse(message, exception);
     }
 
     private RestResponse<ErrorResponse> buildErrorResponse(AtmLayerException e) {
@@ -44,6 +44,14 @@ public class GlobalExceptionMapperImpl {
                 .errorCode(e.getErrorCode())
                 .build();
         return RestResponse.status(Response.Status.fromStatusCode(e.getStatusCode()), errorResponse);
+    }
+
+    private RestResponse<ErrorResponse> buildErrorResponse(String message, Exception e) {
+        return RestResponse.status(Response.Status.INTERNAL_SERVER_ERROR, ErrorResponse.builder()
+                .type(Response.Status.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())
+                .message(message + " " + e)
+                .build());
     }
 
     private RestResponse<ErrorResponse> buildErrorResponse(String message) {

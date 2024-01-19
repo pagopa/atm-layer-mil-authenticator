@@ -1,8 +1,6 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.service.impl;
 
 import io.smallrye.mutiny.Uni;
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
 import io.vertx.redis.client.Command;
 import io.vertx.redis.client.Redis;
 import io.vertx.redis.client.Request;
@@ -49,7 +47,11 @@ public class TokenServiceImpl implements TokenService {
     public Uni<TokenDTO> getToken(AuthParameters authParameters) {
         KeyToken keyToken = getKeyToken(authParameters);
         return Uni.createFrom().completionStage(redis.send(Request.cmd(Command.create("GET")).arg(keyToken.toString())).toCompletionStage())
-                .onItem().transform(response -> {
+                .onFailure().recoverWithUni(failure -> {
+                    String message = "Redis request failed, service unavailable";
+                    log.error(message);
+                    return Uni.createFrom().failure(new AtmLayerException(message, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.REDIS_UNAVAILABLE));
+                }).onItem().transform(response -> {
                     TokenDTO tokenDTO = new TokenDTO();
                     if (response != null) {
                         String token = response.toString();
@@ -61,9 +63,6 @@ public class TokenServiceImpl implements TokenService {
                     }
                     log.info("Token not found in cache");
                     throw new AtmLayerException("Token not found in cache", Response.Status.NOT_FOUND, AppErrorCodeEnum.TOKEN_NOT_FOUND);
-                }).onFailure().recoverWithUni(failure -> {
-                    log.error(failure.getMessage());
-                    return Uni.createFrom().failure(new AtmLayerException("Redis request failed, service unavailable", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.REDIS_UNAVAILABLE));
                 });
     }
 
@@ -75,46 +74,6 @@ public class TokenServiceImpl implements TokenService {
         keyToken.setTransactionId(authParameters.getTransactionId());
         return keyToken;
     }
-
-//    @Override
-//    public Uni<TokenDTO> generateToken(AuthParameters authParameters) {
-//        KeyToken keyToken = getKeyToken(authParameters);
-//        log.info("mil request starting");
-//        RequestHeaders headers = prepareAuthHeaders(authParameters);
-//        String body = prepareAuthBody();
-//        log.info("request ready");
-//        Uni<Token> tokenUni = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
-//
-//        return tokenUni.onFailure()
-//                .recoverWithUni(failure -> {
-//                    log.error(failure.getMessage());
-//                    return Uni.createFrom().failure(new AtmLayerException("MIL unavailable", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.MIL_UNAVAILABLE));
-//                })
-//                .onItem()
-//                .transformToUni(token -> {
-//                    log.info("redis connection starting");
-//                    redis.send(Request.cmd(Command.create("SET"))
-//                            .arg(keyToken.toString())
-//                            .arg(token.getAccessToken())
-//                            .arg("EX")
-//                            .arg(token.getExpiresIn()))
-//                            .recover(throwable -> {
-//                                log.error("Redis unavailable", throwable);
-//                                return Future.failedFuture(new AtmLayerException("Redis unavailable", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.REDIS_UNAVAILABLE));
-//                            })
-//                            .onComplete(response -> log.info("redis request completed"))
-//                            .transform(responseAsyncResult -> {
-//                                responseAsyncResult.map(response -> {
-//                                    TokenDTO tokenDTO = new TokenDTO();
-//                                    tokenDTO.setAccessToken(token.getAccessToken());
-//                                    return Uni.createFrom().item(tokenDTO);
-//                                });
-//                                return null;
-//                            });
-//
-//                    return null;
-//                });
-//    }
 
     @Override
     public Uni<TokenDTO> generateToken(AuthParameters authParameters) {
@@ -130,7 +89,7 @@ public class TokenServiceImpl implements TokenService {
                 .onFailure()
                 .recoverWithUni(failure -> {
                     log.error(failure.getMessage());
-                    return Uni.createFrom().failure(new AtmLayerException("MIL unavailable", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.MIL_UNAVAILABLE));
+                    return Uni.createFrom().failure(new AtmLayerException("MIL connection error, " + failure.getMessage(), Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.MIL_UNAVAILABLE));
                 })
                 .onItem()
                 .transformToUni(token -> {
@@ -142,17 +101,16 @@ public class TokenServiceImpl implements TokenService {
                                     .arg("EX")
                                     .arg(token.getExpiresIn())
                             ).toCompletionStage()
-                    ).onItem().transformToUni(ignore -> {
+                    ).onFailure().recoverWithUni(failure -> {
+                        String message = "Redis request failed, service unavailable";
+                        log.error(message);
+                        return Uni.createFrom().failure(new AtmLayerException(message, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.REDIS_UNAVAILABLE));
+                    }).onItem().transformToUni(ignore -> {
+                        log.info("redis connection success, request send");
                         TokenDTO tokenDTO = new TokenDTO();
                         tokenDTO.setAccessToken(token.getAccessToken());
                         return Uni.createFrom().item(tokenDTO);
-                    }).onFailure().recoverWithUni(failure -> {
-                        log.error(failure.getMessage());
-                        return Uni.createFrom().failure(new AtmLayerException("Redis request failed, service unavailable", Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.REDIS_UNAVAILABLE));
                     });
-
-
-
                 });
     }
 
