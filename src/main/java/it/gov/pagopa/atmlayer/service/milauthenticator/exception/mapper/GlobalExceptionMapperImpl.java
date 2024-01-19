@@ -12,9 +12,6 @@ import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Set;
-
 @IfBuildProperty(name = "mapper.enabled", stringValue = "true", enableIfMissing = true)
 @Singleton
 @Slf4j
@@ -43,8 +40,8 @@ public class GlobalExceptionMapperImpl {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .type(e.getType())
                 .status(e.getStatusCode())
-                .detail(e.getMessage())
-                .instance(e.getErrorCode())
+                .message(e.getMessage())
+                .errorCode(e.getErrorCode())
                 .build();
         return RestResponse.status(Response.Status.fromStatusCode(e.getStatusCode()), errorResponse);
     }
@@ -53,7 +50,7 @@ public class GlobalExceptionMapperImpl {
         return RestResponse.status(Response.Status.INTERNAL_SERVER_ERROR, ErrorResponse.builder()
                 .type(Response.Status.INTERNAL_SERVER_ERROR.getReasonPhrase())
                 .status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())
-                .detail(message)
+                .message(message)
                 .build());
     }
 
