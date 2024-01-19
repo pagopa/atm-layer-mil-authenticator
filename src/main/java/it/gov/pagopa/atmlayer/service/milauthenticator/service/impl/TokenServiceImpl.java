@@ -26,6 +26,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -114,6 +115,23 @@ public class TokenServiceImpl implements TokenService {
                 });
     }
 
+    @Override
+    public Uni<Void> deleteToken(AuthParameters authParameters) {
+        KeyToken keyToken = getKeyToken(authParameters);
+        return Uni.createFrom().completionStage(redis.send(Request.cmd(Command.create("DEL")).arg(keyToken.toString())).toCompletionStage())
+                .onFailure().recoverWithUni(failure -> {
+                    String message = "Redis request failed, service unavailable";
+                    log.error(message);
+                    return Uni.createFrom().failure(new AtmLayerException(message, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.REDIS_UNAVAILABLE));
+                }).onItem().transformToUni(response -> {
+                    if (Objects.equals(response.toString(), "0")){
+                        log.info("Token not found");
+                        throw new AtmLayerException("Token not found in cache", Response.Status.NOT_FOUND, AppErrorCodeEnum.TOKEN_NOT_FOUND);
+                    }
+                    log.info("Token deleted");
+                    return Uni.createFrom().voidItem();
+                });
+    }
 
 
     private String prepareAuthBody() {
