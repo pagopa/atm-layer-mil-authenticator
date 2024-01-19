@@ -11,7 +11,7 @@ import static it.gov.pagopa.atmlayer.service.milauthenticator.enums.AppErrorType
 public enum AppErrorCodeEnum {
 
     ATML_MIL_AUTH_500("ATML_MIL_AUTH_500", "An unexpected error has occurred, see logs for more info", GENERIC),
-    TOKEN_NOT_FOUND("ATML_MIL_AUTH_00001", "Token not found in cache", ID_NOT_FOUND),
+    TOKEN_NOT_FOUND("ATML_MIL_AUTH_00001", "Token not found in cache", KEY_TOKEN_NOT_FOUND),
     MIL_UNAVAILABLE("ATML_MIL_AUTH_00002", "MIL not available", MIL_COMMUNICATION),
     REDIS_UNAVAILABLE("ATML_MIL_AUTH_00003", "Redis not available", REDIS_COMMUNICATION);
 
