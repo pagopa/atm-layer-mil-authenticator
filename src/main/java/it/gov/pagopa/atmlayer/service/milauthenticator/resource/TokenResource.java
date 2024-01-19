@@ -8,6 +8,7 @@ import it.gov.pagopa.atmlayer.service.milauthenticator.model.TokenDTO;
 import it.gov.pagopa.atmlayer.service.milauthenticator.service.TokenService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
@@ -35,7 +36,7 @@ public class TokenResource {
     @Operation(summary = "Restituisce il token presente nella cache", description = "Esegue la GET nella cache Redis e restituisce il token trovato tramite i valori di input")
     @APIResponse(responseCode = "200", description = "Operazione eseguita con successo. Il processo è terminato.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenDTO.class)))
     @APIResponse(responseCode = "404", description = "Token non trovato nella cache con i valori di input inseriti", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    @APIResponse(responseCode = "500", description = "Errore generico.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @APIResponse(responseCode = "500", description = "Redis non raggiungibile.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     public Uni<TokenDTO> getToken(@HeaderParam("AcquirerId") String acquirerId,
                                   @HeaderParam("Channel") String channel,
                                   @HeaderParam("TerminalId") String terminalId,
@@ -54,7 +55,7 @@ public class TokenResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Restituisce il token creato e lo salva nella cache", description = "Chiama il MIL, CREATE token nella cache Redis e restituisce il token creato")
     @APIResponse(responseCode = "200", description = "Operazione eseguita con successo. Il processo è terminato.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenDTO.class)))
-    @APIResponse(responseCode = "500", description = "Errore generico.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @APIResponse(responseCode = "500", description = "Servizi esterni (cache, generazione token) non raggiungibili.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     public Uni<TokenDTO> createToken(@HeaderParam("AcquirerId") String acquirerId,
                                      @HeaderParam("Channel") String channel,
                                      @HeaderParam("TerminalId") String terminalId,
@@ -66,6 +67,24 @@ public class TokenResource {
                 .channel(channel)
                 .terminalId(terminalId)
                 .fiscalCode(fiscalCode)
+                .transactionId(transactionId)
+                .build());
+    }
+
+
+    @DELETE
+    @Operation(summary = "Cancella il token salvato nella cache", description = "Esegue la DELETE nella cache Redis")
+    @APIResponse(responseCode = "204", description = "Operazione eseguita con successo. Il processo è terminato.")
+    @APIResponse(responseCode = "404", description = "Token non presente in cache.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @APIResponse(responseCode = "500", description = "Redis non raggiungibile.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    public Uni<Void> deleteToken(@HeaderParam("AcquirerId") String acquirerId,
+                                 @HeaderParam("Channel") String channel,
+                                 @HeaderParam("TerminalId") String terminalId,
+                                 @HeaderParam("TransactionId") String transactionId) {
+        return this.tokenService.deleteToken(AuthParameters.builder()
+                .acquirerId(acquirerId)
+                .channel(channel)
+                .terminalId(terminalId)
                 .transactionId(transactionId)
                 .build());
     }

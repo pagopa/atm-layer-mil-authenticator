@@ -9,4 +9,6 @@ public interface TokenService {
     Uni<TokenDTO> getToken(AuthParameters authParameters);
 
     Uni<TokenDTO> generateToken(AuthParameters authParameters);
+
+    Uni<Void> deleteToken(AuthParameters authParameters);
 }
