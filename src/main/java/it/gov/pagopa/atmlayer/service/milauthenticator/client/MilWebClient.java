@@ -1,19 +1,14 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.client;
 
-import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 import io.smallrye.common.constraint.NotNull;
 import io.smallrye.mutiny.Uni;
-import it.gov.pagopa.atmlayer.service.milauthenticator.enums.AppErrorCodeEnum;
-import it.gov.pagopa.atmlayer.service.milauthenticator.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.Token;
-import it.gov.pagopa.atmlayer.service.milauthenticator.model.TokenDTO;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @Path("")

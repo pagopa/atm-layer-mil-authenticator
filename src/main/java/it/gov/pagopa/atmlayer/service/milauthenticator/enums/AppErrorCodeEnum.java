@@ -2,7 +2,11 @@ package it.gov.pagopa.atmlayer.service.milauthenticator.enums;
 
 import lombok.Getter;
 
-import static it.gov.pagopa.atmlayer.service.milauthenticator.enums.AppErrorType.*;
+import static it.gov.pagopa.atmlayer.service.milauthenticator.enums.AppErrorType.GENERIC;
+import static it.gov.pagopa.atmlayer.service.milauthenticator.enums.AppErrorType.INVALID_ARGUMENT;
+import static it.gov.pagopa.atmlayer.service.milauthenticator.enums.AppErrorType.KEY_TOKEN_NOT_FOUND;
+import static it.gov.pagopa.atmlayer.service.milauthenticator.enums.AppErrorType.MIL_COMMUNICATION;
+import static it.gov.pagopa.atmlayer.service.milauthenticator.enums.AppErrorType.REDIS_COMMUNICATION;
 
 /**
  * Enumeration for application error codes and messages
