@@ -23,8 +23,8 @@ public class ErrorResponse {
     private int status;
 
     @Schema(example = "An unexpected error has occurred. Please contact support.")
-    private String detail;
+    private String message;
 
     @Schema(example = "ATML_MIL_AUTH-500")
-    private String instance;
+    private String errorCode;
 }
