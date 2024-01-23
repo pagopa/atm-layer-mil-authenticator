@@ -20,12 +20,6 @@ public class HttpResponseLogger implements ContainerResponseFilter {
         log.info("Status code  : {}", responseContext.getStatus());
         log.info("Status message  : {}", responseContext.getStatusInfo().getReasonPhrase());
         log.info("Headers      : {}", responseContext.getHeaders());
-        try {
-            TokenDTO responseToken = (TokenDTO) responseContext.getEntity();
-            log.info("Response token: {}", responseToken.getAccessToken());
-        } catch (Exception e) {
-            log.info("Response body: {}", responseContext.getEntityClass());
-        }
     }
 
     @Override

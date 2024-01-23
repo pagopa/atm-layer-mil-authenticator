@@ -14,6 +14,7 @@ public class HttpRequestLogger implements ContainerRequestFilter {
         log.info("====================================request started with transactionId= {}", requestContext.getHeaderString("TransactionId"));
         log.info("URI         : {}", requestContext.getUriInfo().getAbsolutePath());
         log.info("Method      : {}", requestContext.getMethod());
+        requestContext.getHeaders().remove("FiscalCode");
         log.info("Headers     : {}", requestContext.getHeaders());
     }
 
