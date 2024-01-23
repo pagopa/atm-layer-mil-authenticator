@@ -30,7 +30,6 @@ class TokenResourceTest {
 
     @Test
     void testGetToken() {
-        // Arrange
         AuthParameters authParameters = AuthParameters.builder()
                 .acquirerId("acquirer")
                 .channel("channel")
@@ -40,16 +39,13 @@ class TokenResourceTest {
         TokenDTO expectedTokenDTO = new TokenDTO();
         when(tokenService.getToken(eq(authParameters))).thenReturn(Uni.createFrom().item(expectedTokenDTO));
 
-        // Act
         Uni<TokenDTO> result = tokenResource.getToken("acquirer", "channel", "terminal", "transaction");
 
-        // Assert
         assertEquals(expectedTokenDTO, result.await().indefinitely());
     }
 
     @Test
     void testCreateToken() {
-        // Arrange
         AuthParameters authParameters = AuthParameters.builder()
                 .acquirerId("acquirer")
                 .channel("channel")
@@ -60,16 +56,13 @@ class TokenResourceTest {
         TokenDTO expectedTokenDTO = new TokenDTO();
         when(tokenService.generateToken(eq(authParameters))).thenReturn(Uni.createFrom().item(expectedTokenDTO));
 
-        // Act
         Uni<TokenDTO> result = tokenResource.createToken("acquirer", "channel", "terminal", "fiscalCode", "transaction");
 
-        // Assert
         assertEquals(expectedTokenDTO, result.await().indefinitely());
     }
 
     @Test
     void testDeleteToken() {
-        // Arrange
         AuthParameters authParameters = AuthParameters.builder()
                 .acquirerId("acquirer")
                 .channel("channel")
@@ -78,12 +71,8 @@ class TokenResourceTest {
                 .build();
         when(tokenService.deleteToken(eq(authParameters))).thenReturn(Uni.createFrom().nullItem());
 
-        // Act
         Uni<Void> result = tokenResource.deleteToken("acquirer", "channel", "terminal", "transaction");
 
-        // Assert
-        result.await().indefinitely(); // Ensure no exceptions are thrown
+        result.await().indefinitely();
     }
-
-    // Add more test methods for error cases, validations, etc.
 }
