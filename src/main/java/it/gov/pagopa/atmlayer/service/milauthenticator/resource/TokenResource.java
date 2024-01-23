@@ -58,7 +58,7 @@ public class TokenResource {
     @APIResponse(responseCode = "400", description = "Uno o più valori di input non valorizzati correttamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class)))
     @APIResponse(responseCode = "500", description = "Servizi esterni (cache, generazione token) non raggiungibili.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     public Uni<TokenDTO> createToken(@NotEmpty @HeaderParam("AcquirerId") String acquirerId,
-                                     @NotEmpty @NotEmpty @HeaderParam("Channel") String channel,
+                                     @NotEmpty @HeaderParam("Channel") String channel,
                                      @NotEmpty @HeaderParam("TerminalId") String terminalId,
                                      @HeaderParam("FiscalCode") String fiscalCode,
                                      @NotEmpty @HeaderParam("TransactionId") String transactionId) {
