@@ -1,78 +1,64 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.resource;
 
+import io.quarkus.test.InjectMock;
+import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
-import it.gov.pagopa.atmlayer.service.milauthenticator.model.*;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.AuthParameters;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.TokenDTO;
 import it.gov.pagopa.atmlayer.service.milauthenticator.service.TokenService;
-import jakarta.ws.rs.HeaderParam;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static io.restassured.RestAssured.given;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+@QuarkusTest
 class TokenResourceTest {
-
-    @Mock
-    private TokenService tokenService;
-
-    @InjectMocks
-    private TokenResource tokenResource;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+    @InjectMock
+    TokenService tokenService;
 
     @Test
     void testGetToken() {
-        AuthParameters authParameters = AuthParameters.builder()
-                .acquirerId("acquirer")
-                .channel("channel")
-                .terminalId("terminal")
-                .transactionId("transaction")
-                .build();
         TokenDTO expectedTokenDTO = new TokenDTO();
-        when(tokenService.getToken(eq(authParameters))).thenReturn(Uni.createFrom().item(expectedTokenDTO));
-
-        Uni<TokenDTO> result = tokenResource.getToken("acquirer", "channel", "terminal", "transaction");
-
-        assertEquals(expectedTokenDTO, result.await().indefinitely());
+        when(tokenService.getToken(any(AuthParameters.class))).thenReturn(Uni.createFrom().item(expectedTokenDTO));
+        given()
+                .header("AcquirerId", "acquirerTest")
+                .header("Channel", "channelTest")
+                .header("TerminalId", "terminalTest")
+                .header("TransactionId", "transactionTest")
+                .when().get("/api/v1/mil-authenticator/token")
+                .then()
+                .statusCode(200);
     }
 
     @Test
     void testCreateToken() {
-        AuthParameters authParameters = AuthParameters.builder()
-                .acquirerId("acquirer")
-                .channel("channel")
-                .terminalId("terminal")
-                .fiscalCode("fiscalCode")
-                .transactionId("transaction")
-                .build();
         TokenDTO expectedTokenDTO = new TokenDTO();
-        when(tokenService.generateToken(eq(authParameters))).thenReturn(Uni.createFrom().item(expectedTokenDTO));
-
-        Uni<TokenDTO> result = tokenResource.createToken("acquirer", "channel", "terminal", "fiscalCode", "transaction");
-
-        assertEquals(expectedTokenDTO, result.await().indefinitely());
+        expectedTokenDTO.setAccessToken("expectedToken");
+        when(tokenService.generateToken(any(AuthParameters.class))).thenReturn(Uni.createFrom().item(expectedTokenDTO));
+        given()
+                .header("AcquirerId", "acquirerTest")
+                .header("Channel", "channelTest")
+                .header("TerminalId", "terminalTest")
+                .header("FiscalCode", "fiscalCodeTest")
+                .header("TransactionId", "transactionTest")
+                .when().post("/api/v1/mil-authenticator/token")
+                .then()
+                .statusCode(200);
     }
 
     @Test
     void testDeleteToken() {
-        AuthParameters authParameters = AuthParameters.builder()
-                .acquirerId("acquirer")
-                .channel("channel")
-                .terminalId("terminal")
-                .transactionId("transaction")
-                .build();
-        when(tokenService.deleteToken(eq(authParameters))).thenReturn(Uni.createFrom().nullItem());
-
-        Uni<Void> result = tokenResource.deleteToken("acquirer", "channel", "terminal", "transaction");
-
-        result.await().indefinitely();
+        TokenDTO expectedTokenDTO = new TokenDTO();
+        expectedTokenDTO.setAccessToken("expectedToken");
+        when(tokenService.deleteToken(any(AuthParameters.class))).thenReturn(Uni.createFrom().voidItem());
+        given()
+                .header("AcquirerId", "acquirerTest")
+                .header("Channel", "channelTest")
+                .header("TerminalId", "terminalTest")
+                .header("TransactionId", "transactionTest")
+                .when().delete("/api/v1/mil-authenticator/token")
+                .then()
+                .statusCode(204);
     }
 }

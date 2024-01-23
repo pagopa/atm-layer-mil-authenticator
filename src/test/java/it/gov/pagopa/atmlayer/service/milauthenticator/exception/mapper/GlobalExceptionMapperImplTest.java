@@ -1,5 +1,6 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.exception.mapper;
 
+import io.quarkus.test.junit.QuarkusTest;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.ErrorResponse;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.ValidationErrorResponse;
 import it.gov.pagopa.atmlayer.service.milauthenticator.utils.ConstraintViolationMappingUtils;
@@ -18,6 +19,7 @@ import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@QuarkusTest
 class GlobalExceptionMapperImplTest {
 
     @Mock
