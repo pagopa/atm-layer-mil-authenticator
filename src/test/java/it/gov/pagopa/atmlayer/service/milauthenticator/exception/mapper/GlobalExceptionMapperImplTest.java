@@ -1,6 +1,8 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.exception.mapper;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.smallrye.mutiny.CompositeException;
+import it.gov.pagopa.atmlayer.service.milauthenticator.exception.AtmLayerException;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.ErrorResponse;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.ValidationErrorResponse;
 import it.gov.pagopa.atmlayer.service.milauthenticator.utils.ConstraintViolationMappingUtils;
@@ -52,5 +54,19 @@ class GlobalExceptionMapperImplTest {
         Exception exception = new RuntimeException("Test exception");
         RestResponse<ErrorResponse> response = globalExceptionMapper.genericExceptionMapper(exception);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    void testCompositeException() {
+        CompositeException exception = new CompositeException(new Exception());
+        RestResponse<ErrorResponse> response = globalExceptionMapper.compositeException(exception);
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    void testGenericExceptionMapperWithAtmLayerException() {
+        AtmLayerException exception = new AtmLayerException("Test error", Response.Status.BAD_REQUEST, "TEST_ERROR_CODE");
+        RestResponse<ErrorResponse> response = globalExceptionMapper.genericExceptionMapper(exception);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 }
