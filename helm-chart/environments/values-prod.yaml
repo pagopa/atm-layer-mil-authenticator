@@ -20,6 +20,8 @@ secretProviderClass:
   name: atm-layer-mil-authenticator-secrets
   env: prod
 
+milBasePath: https://mil-u-apim.azure-api.net
+
 milAuthenticator:
   environment: prod
   executionMode: READ_WRITE
@@ -30,6 +32,7 @@ milAuthenticator:
   openapiPath: /health/v1/mil-authenticator
 
 milAuth:
+  env: prod
   clientCredentials: client_credentials
   credentialsSecretName: "pagopa-prod-atm-layer-mil-authenticator-mil-auth"
   credentialsSecretKeys:

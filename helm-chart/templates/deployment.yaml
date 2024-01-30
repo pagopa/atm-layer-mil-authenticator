@@ -50,6 +50,8 @@ spec:
               value: "{{ .Values.milAuthenticator.openapiPath }}"
             - name: MIL_AUTHENTICATOR_AUTH_CLIENT_CREDENTIALS
               value: "{{ .Values.milAuth.clientCredentials }}"
+            - name: MIL_BASE_PATH
+              value: "{{ .Values.milBasePath }}"
             - name: REDIS_HOST
               valueFrom:
                 secretKeyRef:
