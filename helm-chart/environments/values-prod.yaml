@@ -32,7 +32,6 @@ milAuthenticator:
   openapiPath: /health/v1/mil-authenticator
 
 milAuth:
-  env: prod
   clientCredentials: client_credentials
   credentialsSecretName: "pagopa-prod-atm-layer-mil-authenticator-mil-auth"
   credentialsSecretKeys:
