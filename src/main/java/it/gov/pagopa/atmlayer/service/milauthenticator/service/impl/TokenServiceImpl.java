@@ -82,7 +82,7 @@ public class TokenServiceImpl implements TokenService {
         log.info("mil request starting");
         RequestHeaders headers = prepareAuthHeaders(authParameters);
         String body = prepareAuthBody();
-        log.info("request ready");
+        log.info("request ready, calling rest client on base URL: {}",System.getenv("MIL_BASE_PATH"));
 
         Uni<Token> tokenUni = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
 

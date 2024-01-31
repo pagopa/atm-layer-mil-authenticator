@@ -11,11 +11,9 @@ import java.time.LocalDateTime;
 @Slf4j
 public class HttpRequestLogger implements ContainerRequestFilter {
     public void logRequest(ContainerRequestContext requestContext) {
-        log.info("====================================request started with transactionId= {}", requestContext.getHeaderString("TransactionId"));
-        log.info("URI         : {}", requestContext.getUriInfo().getAbsolutePath());
-        log.info("Method      : {}", requestContext.getMethod());
         requestContext.getHeaders().remove("FiscalCode");
-        log.info("Headers     : {}", requestContext.getHeaders());
+        log.info("====================================request started with transactionId= {}, URI : {}, Method : {}" +
+                "Headers : {}", requestContext.getHeaderString("TransactionId"), requestContext.getUriInfo().getAbsolutePath(), requestContext.getMethod(), requestContext.getHeaders());
     }
 
     @Override
