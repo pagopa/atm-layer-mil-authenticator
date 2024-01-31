@@ -13,7 +13,7 @@ public class HttpRequestLogger implements ContainerRequestFilter {
     public void logRequest(ContainerRequestContext requestContext) {
         requestContext.getHeaders().remove("FiscalCode");
         log.info("====================================request started with transactionId= {}, URI : {}, Method : {}" +
-                "Headers : {}", requestContext.getHeaderString("TransactionId"), requestContext.getUriInfo().getAbsolutePath(), requestContext.getMethod(), requestContext.getHeaders());
+                ", Headers : {}", requestContext.getHeaderString("TransactionId"), requestContext.getUriInfo().getAbsolutePath(), requestContext.getMethod(), requestContext.getHeaders());
     }
 
     @Override

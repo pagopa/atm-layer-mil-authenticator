@@ -16,7 +16,8 @@ import java.time.temporal.Temporal;
 @Slf4j
 public class HttpResponseLogger implements ContainerResponseFilter {
     public void logResponse(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
-        log.info("====================================response received with transactionId= {}, Status code  : {}, Status message  : {}, Headers      : {}", requestContext.getHeaderString("TransactionId"), responseContext.getStatus(), responseContext.getStatusInfo().getReasonPhrase(), responseContext.getHeaders());
+        TokenDTO responseToken= (TokenDTO) responseContext.getEntity();
+        log.info("====================================response received with transactionId= {}, Status code  :  {}, Status message  :  {}, Headers  :  {}, Response token  :  {}", requestContext.getHeaderString("TransactionId"), responseContext.getStatus(), responseContext.getStatusInfo().getReasonPhrase(), responseContext.getHeaders(), responseToken.getAccessToken());
     }
 
     @Override
