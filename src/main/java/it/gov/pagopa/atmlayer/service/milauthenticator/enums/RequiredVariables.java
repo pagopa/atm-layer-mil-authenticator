@@ -9,12 +9,12 @@ public enum RequiredVariables {
     ACQUIRER_ID("AcquirerId"),
     BRANCH_ID("BranchId"),
     TERMINAL_ID("TerminalId"),
-    FISCAL_CODE("FiscalCode"),
     TRANSACTION_ID("TransactionId"),
     CLIENT_ID("client_id"),
     CLIENT_SECRET("client_secret"),
     GRANT_TYPE("grant_type"),
-    CONTENT_TYPE("content_type");
+    CONTENT_TYPE("content_type"),
+    FISCAL_CODE("fiscal_code");
 
     private final String value;
 }
