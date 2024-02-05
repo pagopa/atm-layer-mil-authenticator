@@ -112,10 +112,14 @@ resources: {}
 
 autoscaling:
   enabled: false
-  minReplicas: 1
-  maxReplicas: 100
+  minReplicas: 2
+  maxReplicas: 4
   targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+  memoryLimits: 1000Mi
+  memoryRequests: 100Mi
+  cpuLimits: 500m
+  cpuRequest: 50m
 
 nodeSelector: {}
 
