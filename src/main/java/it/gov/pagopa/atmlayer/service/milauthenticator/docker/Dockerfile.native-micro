@@ -2,9 +2,9 @@
 FROM quay.io/quarkus/ubi-quarkus-mandrel-builder-image:jdk-17 AS builder
 WORKDIR /app
 USER quarkus
-COPY --chown=quarkus:quarkus --chmod=644 mvnw .
-COPY --chown=quarkus:quarkus --chmod=644 .mvn /app/.mvn
-COPY --chown=quarkus:quarkus --chmod=644 pom.xml .
+COPY --chown=quarkus:quarkus mvnw .
+COPY --chown=quarkus:quarkus .mvn /app/.mvn
+COPY --chown=quarkus:quarkus pom.xml .
 RUN chmod +x mvnw
 RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:3.1.2:go-offline
 COPY src src
