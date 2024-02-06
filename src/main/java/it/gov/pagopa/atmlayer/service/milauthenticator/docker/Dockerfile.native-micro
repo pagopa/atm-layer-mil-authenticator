@@ -20,9 +20,6 @@ RUN chown 1001 /work \
     && chown 1001:root /work
 COPY --from=builder /app/target/*-runner /work/application
 
-# Adjust permissions after copy
-RUN find /work/application -type f -exec chmod 644 {} \;
-
 EXPOSE 8080
 USER 1001
 ENTRYPOINT ["./application", "-Dquarkus.http.host=0.0.0.0"]
