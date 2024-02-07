@@ -17,6 +17,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 secretProviderClass:
+  enabled: true
   name: atm-layer-mil-authenticator-secrets
   env: prod
 
