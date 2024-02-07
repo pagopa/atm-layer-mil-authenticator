@@ -17,8 +17,33 @@ nameOverride: ""
 fullnameOverride: ""
 
 secretProviderClass:
+  enabled: true
   name: atm-layer-mil-authenticator-secrets
   env: dev
+
+milBasePath: https://mil-u-apim.azure-api.net
+
+milAuthenticator:
+  environment: dev
+  executionMode: READ_WRITE
+  logLevel: INFO
+  applicationBasePath: /api/v1/mil-authenticator
+  swaggerPath: /swagger-ui
+  healthPath: /health/v1/mil-authenticator
+  openapiPath: /health/v1/mil-authenticator
+
+milAuth:
+  clientCredentials: client_credentials
+  credentialsSecretName: "pagopa-dev-atm-layer-mil-authenticator-mil-auth"
+  credentialsSecretKeys:
+    clientId: CLIENT_ID
+    clientSecret: CLIENT_SECRET
+
+redis:
+  credentialsSecretName: pagopa-dev-atm-layer-mil-authenticator-redis
+  credentialsSecretKeys:
+    host: host
+    port: port
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -47,7 +72,7 @@ deployment:
   name: pagopa-dev-atm-layer-mil-authenticator
   annotation:
     reloader.stakater.com/auto: "true"
-    secret.reloader.stakater.com/reload: pagopa-dev-atm-layer-mil-authenticator-camunda
+    secret.reloader.stakater.com/reload: pagopa-dev-atm-layer-mil-authenticator-redis, pagopa-dev-atm-layer-mil-authenticator-mil-auth
 
 service:
   name: pagopa-dev-atm-layer-mil-authenticator
@@ -55,7 +80,7 @@ service:
   port: 8080
 
 ingress:
-  enabled: true
+  enabled: false
   name: pagopa-dev-atm-layer-mil-authenticator
   className: ""
   annotations: 
@@ -89,9 +114,13 @@ resources: {}
 autoscaling:
   enabled: false
   minReplicas: 1
-  maxReplicas: 100
+  maxReplicas: 2
   targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+  memoryLimits: 1000Mi
+  memoryRequests: 100Mi
+  cpuLimits: 500m
+  cpuRequest: 50m
 
 nodeSelector: {}
 
