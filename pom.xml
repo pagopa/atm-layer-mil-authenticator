@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>it.gov.pagopa</groupId>
   <artifactId>atm-layer-mil-authenticator</artifactId>
-  <version>1.1.0-hotfix.7</version>
+  <version>1.1.0-hotfix.8</version>
   <name>atm-layer-mil-authenticator</name>
   <properties>
     <compiler-plugin.version>3.11.0</compiler-plugin.version>
