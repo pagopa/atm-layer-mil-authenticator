@@ -23,6 +23,11 @@ secretProviderClass:
 
 milBasePath: https://mil-u-apim.azure-api.net
 
+tracing:
+  enabled: "true"
+  endpointBasePath: "http://jaeger-collector.default.svc.cluster.local:4317"
+  enableJDBCMonitoring: "true"
+
 milAuthenticator:
   environment: uat
   executionMode: READ_WRITE

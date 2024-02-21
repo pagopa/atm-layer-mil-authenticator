@@ -56,6 +56,12 @@ spec:
               value: "{{ .Values.milAuth.clientCredentials }}"
             - name: MIL_BASE_PATH
               value: "{{ .Values.milBasePath }}"
+            - name: TRACING_ENABLED
+              value: "{{ .Values.tracing.enabled }}"
+            - name: TRACING_ENDPOINT_BASE_PATH
+              value: "{{ .Values.tracing.endpointBasePath }}"
+            - name: TRACING_ENABLE_JDBC_MONITORING
+              value: "{{ .Values.tracing.enableJDBCMonitoring }}"
             - name: REDIS_HOST
               valueFrom:
                 secretKeyRef:
