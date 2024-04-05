@@ -38,6 +38,8 @@ spec:
             - containerPort: {{ .Values.service.port }}
           imagePullPolicy: Always
           env:
+            - name: TZ
+              value: Europe/Rome
             - name: MIL_AUTHENTICATOR_ENVIRONMENT
               value: "{{ .Values.milAuthenticator.environment }}"
             - name: MIL_AUTHENTICATOR_EXECUTION_MODE
