@@ -39,12 +39,14 @@ milAuthenticator:
 
 milAuth:
   clientCredentials: client_credentials
+  credentialsSecretEnabled: true
   credentialsSecretName: "pagopa-dev-atm-layer-mil-authenticator-mil-auth"
   credentialsSecretKeys:
     clientId: CLIENT_ID
     clientSecret: CLIENT_SECRET
 
 redis:
+  credentialsSecretEnabled: true
   credentialsSecretName: pagopa-dev-atm-layer-mil-authenticator-redis
   credentialsSecretKeys:
     host: host
