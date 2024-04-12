@@ -81,10 +81,10 @@ public class TokenServiceImpl implements TokenService {
         KeyToken keyToken = getKeyToken(authParameters);
         log.info("mil request starting");
         RequestHeaders headers = prepareAuthHeaders(authParameters);
-        String body = prepareAuthBody();
-        log.info("request ready");
+        String body = prepareAuthBody(authParameters);
+        log.info("request ready, calling rest client on base URL: {}",System.getenv("MIL_BASE_PATH"));
 
-        Uni<Token> tokenUni = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), headers.getFiscalCode(), body);
+        Uni<Token> tokenUni = milWebClient.getTokenFromMil(headers.getContentType(), headers.getRequestId(), headers.getAcquirerId(), headers.getChannel(), headers.getTerminalId(), body);
 
         return tokenUni
                 .onFailure()
@@ -134,11 +134,14 @@ public class TokenServiceImpl implements TokenService {
     }
 
 
-    private String prepareAuthBody() {
+    private String prepareAuthBody(AuthParameters authParameters) {
         Map<String, String> bodyParams = new HashMap<>();
         bodyParams.put(RequiredVariables.CLIENT_ID.getValue(), authProperties.getClientId());
         bodyParams.put(RequiredVariables.CLIENT_SECRET.getValue(), authProperties.getClientSecret());
         bodyParams.put(RequiredVariables.GRANT_TYPE.getValue(), authProperties.getGrantType());
+        if (authParameters.getFiscalCode()!=null && !authParameters.getFiscalCode().isEmpty()) {
+            bodyParams.put(RequiredVariables.FISCAL_CODE.getValue(), authParameters.getFiscalCode());
+        }
         String body = bodyParams.entrySet().stream()
                 .map(entry -> URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8) + "="
                         + URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8))
@@ -153,7 +156,6 @@ public class TokenServiceImpl implements TokenService {
         headers.setAcquirerId(authParameters.getAcquirerId());
         headers.setChannel(authParameters.getChannel());
         headers.setTerminalId(authParameters.getTerminalId());
-        headers.setFiscalCode(authParameters.getFiscalCode());
         return headers;
     }
 }

@@ -23,6 +23,4 @@ public class RequestHeaders {
     private String channel;
     @HeaderParam("TerminalId")
     private String terminalId;
-    @HeaderParam("FiscalCode")
-    private String fiscalCode;
 }

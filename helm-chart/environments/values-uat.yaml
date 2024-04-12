@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 2
+replicaCount: 4
 
 image:
   repository: 00000000000.dkr.ecr.eu-south-1.amazonaws.com/xxxxxxx
@@ -17,8 +17,16 @@ nameOverride: ""
 fullnameOverride: ""
 
 secretProviderClass:
+  enabled: true
   name: atm-layer-mil-authenticator-secrets
   env: uat
+
+milBasePath: https://mil-u-apim.azure-api.net
+
+tracing:
+  enabled: "true"
+  endpointBasePath: "http://jaeger-collector.default.svc.cluster.local:4317"
+  enableJDBCMonitoring: "true"
 
 milAuthenticator:
   environment: uat
@@ -31,12 +39,14 @@ milAuthenticator:
 
 milAuth:
   clientCredentials: client_credentials
+  credentialsSecretEnabled: true
   credentialsSecretName: "pagopa-uat-atm-layer-mil-authenticator-mil-auth"
   credentialsSecretKeys:
     clientId: CLIENT_ID
     clientSecret: CLIENT_SECRET
 
 redis:
+  credentialsSecretEnabled: true
   credentialsSecretName: "pagopa-uat-atm-layer-mil-authenticator-redis"
   credentialsSecretKeys:
     host: host
@@ -96,24 +106,24 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: {}
+resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
+  #   cpu: 600m
+  #   memory: 600Mi
   # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  #   cpu: 300m
+  #   memory: 300Mi
 
 autoscaling:
   enabled: false
-  minReplicas: 1
-  maxReplicas: 100
+  minReplicas: 2
+  maxReplicas: 4
   targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 

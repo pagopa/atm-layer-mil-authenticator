@@ -9,7 +9,9 @@ metadata:
     {{- toYaml .Values.deployment.annotations | nindent 4 }}
 
 spec:
+  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       App: {{ .Values.deployment.name }}
@@ -21,12 +23,14 @@ spec:
     spec:
       serviceAccountName: {{ include "atm-layer-mil-authenticator.serviceAccountName" . }}
       volumes:
+      {{- if .Values.secretProviderClass.enabled }}
       - name: secrets-store-inline
         csi:
           driver: secrets-store.csi.k8s.io
           readOnly: true 
           volumeAttributes:
             secretProviderClass: {{ .Values.secretProviderClass.name }}
+      {{- end }}
       containers:
         - name: {{ .Values.deployment.name }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -34,6 +38,8 @@ spec:
             - containerPort: {{ .Values.service.port }}
           imagePullPolicy: Always
           env:
+            - name: TZ
+              value: Europe/Rome
             - name: MIL_AUTHENTICATOR_ENVIRONMENT
               value: "{{ .Values.milAuthenticator.environment }}"
             - name: MIL_AUTHENTICATOR_EXECUTION_MODE
@@ -50,6 +56,15 @@ spec:
               value: "{{ .Values.milAuthenticator.openapiPath }}"
             - name: MIL_AUTHENTICATOR_AUTH_CLIENT_CREDENTIALS
               value: "{{ .Values.milAuth.clientCredentials }}"
+            - name: MIL_BASE_PATH
+              value: "{{ .Values.milBasePath }}"
+            - name: TRACING_ENABLED
+              value: "{{ .Values.tracing.enabled }}"
+            - name: TRACING_ENDPOINT_BASE_PATH
+              value: "{{ .Values.tracing.endpointBasePath }}"
+            - name: TRACING_ENABLE_JDBC_MONITORING
+              value: "{{ .Values.tracing.enableJDBCMonitoring }}"
+            {{- if .Values.redis.credentialsSecretEnabled }}
             - name: REDIS_HOST
               valueFrom:
                 secretKeyRef:
@@ -60,6 +75,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.redis.credentialsSecretName }}
                   key: {{ .Values.redis.credentialsSecretKeys.port }}
+            {{- end }}
+            {{- if .Values.milAuth.credentialsSecretEnabled }}
             - name: MIL_AUTHENTICATOR_MIL_AUTH_CLIENT_ID
               valueFrom:
                 secretKeyRef:
@@ -70,10 +87,14 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.milAuth.credentialsSecretName }}
                   key: {{ .Values.milAuth.credentialsSecretKeys.clientSecret }}
+            {{- end }}
           volumeMounts:
+          {{- if .Values.secretProviderClass.enabled }}
           - name: secrets-store-inline
             mountPath: "/mnt/secrets-store"
             readOnly: true
-
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
   strategy:
     type: Recreate

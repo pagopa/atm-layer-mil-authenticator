@@ -24,6 +24,5 @@ public interface MilWebClient {
                                @NotNull @HeaderParam("AcquirerId") String acquirerId,
                                @NotNull @HeaderParam("Channel") String channel,
                                @NotNull @HeaderParam("TerminalId") String terminalId,
-                               @HeaderParam("FiscalCode") String fiscalCode,
                                @NotNull String body);
 }

@@ -16,10 +16,12 @@ import java.time.temporal.Temporal;
 @Slf4j
 public class HttpResponseLogger implements ContainerResponseFilter {
     public void logResponse(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
-        log.info("====================================response received with transactionId= {}", requestContext.getHeaderString("TransactionId"));
-        log.info("Status code  : {}", responseContext.getStatus());
-        log.info("Status message  : {}", responseContext.getStatusInfo().getReasonPhrase());
-        log.info("Headers      : {}", responseContext.getHeaders());
+        try {
+            TokenDTO responseToken = (TokenDTO) responseContext.getEntity();
+            log.info("====================================response received with transactionId= {}, Status code  :  {}, Status message  :  {}, Headers  :  {}, Response token  :  {}", requestContext.getHeaderString("TransactionId"), responseContext.getStatus(), responseContext.getStatusInfo().getReasonPhrase(), responseContext.getHeaders(), responseToken.getAccessToken());
+        } catch (Exception e) {
+            log.info("====================================response received with transactionId= {}, Status code  :  {}, Status message  :  {}, Headers  :  {}", requestContext.getHeaderString("TransactionId"), responseContext.getStatus(), responseContext.getStatusInfo().getReasonPhrase(), responseContext.getHeaders());
+        }
     }
 
     @Override
