@@ -13,7 +13,7 @@ class RequiredVariablesEnumTest {
         assertEquals("AcquirerId", RequiredVariables.ACQUIRER_ID.getValue());
         assertEquals("BranchId", RequiredVariables.BRANCH_ID.getValue());
         assertEquals("TerminalId", RequiredVariables.TERMINAL_ID.getValue());
-        assertEquals("FiscalCode", RequiredVariables.FISCAL_CODE.getValue());
+        assertEquals("fiscal_code", RequiredVariables.FISCAL_CODE.getValue());
         assertEquals("TransactionId", RequiredVariables.TRANSACTION_ID.getValue());
         assertEquals("client_id", RequiredVariables.CLIENT_ID.getValue());
         assertEquals("client_secret", RequiredVariables.CLIENT_SECRET.getValue());

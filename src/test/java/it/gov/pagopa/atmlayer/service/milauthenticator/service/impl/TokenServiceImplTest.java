@@ -84,7 +84,7 @@ class TokenServiceImplTest {
         AuthParameters authParameters = new AuthParameters("a", "b", "c", "d");
         Token mockedToken = new Token();
         mockedToken.setAccessToken("test_token");
-        when(milWebClient.getTokenFromMil(any(), any(), any(), any(), any(), any(), any())).thenReturn(Uni.createFrom().item(mockedToken));
+        when(milWebClient.getTokenFromMil(any(), any(), any(), any(), any(), any())).thenReturn(Uni.createFrom().item(mockedToken));
         Response redisResponse = SimpleStringType.create("token_test");
         Future<Response> redisResponseFuture = Future.succeededFuture(redisResponse);
         when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);
@@ -103,7 +103,7 @@ class TokenServiceImplTest {
         when(authProperties.getClientId()).thenReturn("your_client_id");
         when(authProperties.getClientSecret()).thenReturn("your_client_secret");
         when(authProperties.getGrantType()).thenReturn("your_grant_type");
-        when(milWebClient.getTokenFromMil(any(), any(), any(), any(), any(), any(), any()))
+        when(milWebClient.getTokenFromMil(any(), any(), any(), any(), any(), any()))
                 .thenReturn(Uni.createFrom().failure(new RuntimeException("MIL error")));
         AtmLayerException atmLayerException = assertThrows(
                 AtmLayerException.class,
@@ -118,7 +118,7 @@ class TokenServiceImplTest {
         when(authProperties.getClientId()).thenReturn("your_client_id");
         when(authProperties.getClientSecret()).thenReturn("your_client_secret");
         when(authProperties.getGrantType()).thenReturn("your_grant_type");
-        when(milWebClient.getTokenFromMil(any(), any(), any(), any(), any(), any(), any()))
+        when(milWebClient.getTokenFromMil(any(), any(), any(), any(), any(), any()))
                 .thenReturn(Uni.createFrom().item(new Token()));
         Future<Response> redisResponseFuture = Future.failedFuture(new RuntimeException("Token not found in cache"));
         when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);

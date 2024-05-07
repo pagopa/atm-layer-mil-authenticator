@@ -12,14 +12,14 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.2.5.Final</quarkus.platform.version>
+    <quarkus.platform.version>3.8.4</quarkus.platform.version>
     <quarkus-hibernate-validator.version>3.6.6</quarkus-hibernate-validator.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.0.0</surefire-plugin.version>
     <mockito.core.version>5.4.0</mockito.core.version>
     <easy.random.version>5.0.0</easy.random.version>
     <quarkus-openapi-generator.version>2.2.10</quarkus-openapi-generator.version>
-    <lombok.version>1.18.26</lombok.version>
+    <lombok.version>1.18.30</lombok.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -110,11 +110,6 @@
       <artifactId>quarkus-smallrye-context-propagation</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-junit5</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
@@ -129,11 +124,6 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-jacoco</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.rest-assured</groupId>
-      <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
 
