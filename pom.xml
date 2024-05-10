@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>it.gov.pagopa</groupId>
   <artifactId>atm-layer-mil-authenticator</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0-dev.4</version>
   <properties>
     <compiler-plugin.version>3.11.0</compiler-plugin.version>
     <maven.compiler.release>17</maven.compiler.release>
@@ -12,11 +12,14 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.2.5.Final</quarkus.platform.version>
+    <quarkus.platform.version>3.8.4</quarkus.platform.version>
+    <quarkus-hibernate-validator.version>3.6.6</quarkus-hibernate-validator.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.0.0</surefire-plugin.version>
+    <mockito.core.version>5.4.0</mockito.core.version>
+    <easy.random.version>5.0.0</easy.random.version>
     <quarkus-openapi-generator.version>2.2.10</quarkus-openapi-generator.version>
-    <lombok.version>1.18.26</lombok.version>
+    <lombok.version>1.18.30</lombok.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -71,15 +74,11 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-mutiny</artifactId>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-hibernate-validator -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-validator</artifactId>
-      <version>3.6.6</version>
+      <version>${quarkus-hibernate-validator.version}</version>
     </dependency>
-
-
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
@@ -111,13 +110,43 @@
       <artifactId>quarkus-smallrye-context-propagation</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- TEST -->
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>io.rest-assured</groupId>
-      <artifactId>rest-assured</artifactId>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jacoco</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-junit5-mockito</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-subclass</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jeasy</groupId>
+      <artifactId>easy-random-core</artifactId>
+      <version>${easy.random.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
