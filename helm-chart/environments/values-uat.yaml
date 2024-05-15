@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 2
+replicaCount: 4
 
 image:
   repository: 00000000000.dkr.ecr.eu-south-1.amazonaws.com/xxxxxxx
@@ -23,6 +23,11 @@ secretProviderClass:
 
 milBasePath: https://mil-u-apim.azure-api.net
 
+tracing:
+  enabled: "true"
+  endpointBasePath: "http://jaeger-collector.default.svc.cluster.local:4317"
+  enableJDBCMonitoring: "true"
+
 milAuthenticator:
   environment: uat
   executionMode: READ_WRITE
@@ -34,12 +39,14 @@ milAuthenticator:
 
 milAuth:
   clientCredentials: client_credentials
+  credentialsSecretEnabled: true
   credentialsSecretName: "pagopa-uat-atm-layer-mil-authenticator-mil-auth"
   credentialsSecretKeys:
     clientId: CLIENT_ID
     clientSecret: CLIENT_SECRET
 
 redis:
+  credentialsSecretEnabled: true
   credentialsSecretName: "pagopa-uat-atm-layer-mil-authenticator-redis"
   credentialsSecretKeys:
     host: host
@@ -70,7 +77,7 @@ securityContext: {}
 
 deployment:
   name: pagopa-uat-atm-layer-mil-authenticator
-  annotation:
+  annotations:
     reloader.stakater.com/auto: "true"
     secret.reloader.stakater.com/reload: pagopa-uat-atm-layer-mil-authenticator-redis, pagopa-uat-atm-layer-mil-authenticator-mil-auth
 
@@ -99,28 +106,24 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: {}
+resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  limits:
+    cpu: 150m
+    memory: 200Mi
+  requests:
+    cpu: 30m
+    memory: 80Mi
 
 autoscaling:
-  enabled: false
-  minReplicas: 2
+  enabled: true
+  minReplicas: 1
   maxReplicas: 4
-  targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
-  memoryLimits: 1000Mi
-  memoryRequests: 100Mi
-  cpuLimits: 500m
-  cpuRequest: 50m
+  targetCPUUtilizationPercentage: 40
+  targetMemoryUtilizationPercentage: 90
 
 nodeSelector: {}
 
