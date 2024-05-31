@@ -21,6 +21,8 @@
     <easy.random.version>5.0.0</easy.random.version>
     <quarkus-openapi-generator.version>2.2.10</quarkus-openapi-generator.version>
     <lombok.version>1.18.30</lombok.version>
+    <sonarsource.scanner.version>3.11.0.3922</sonarsource.scanner.version>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -116,6 +118,20 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-opentelemetry</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry.instrumentation</groupId>
+      <artifactId>opentelemetry-jdbc</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-extension-trace-propagators</artifactId>
+    </dependency>
+
     <!-- TEST -->
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -125,6 +141,7 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-jacoco</artifactId>
+
       <scope>test</scope>
     </dependency>
 
@@ -149,6 +166,11 @@
       <artifactId>easy-random-core</artifactId>
       <version>${easy.random.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.scanner.maven</groupId>
+      <artifactId>sonar-maven-plugin</artifactId>
+      <version>${sonarsource.scanner.version}</version>
     </dependency>
   </dependencies>
   <build>
