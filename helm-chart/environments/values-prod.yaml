@@ -21,7 +21,7 @@ secretProviderClass:
   name: atm-layer-mil-authenticator-secrets
   env: prod
 
-milBasePath: https://mil-d-perf-ca.agreeablestone-406ca858.westeurope.azurecontainerapps.io/perf
+milBasePath: https://mil-u-apim.azure-api.net
 
 tracing:
   enabled: "true"
