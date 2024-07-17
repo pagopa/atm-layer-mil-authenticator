@@ -1,7 +1,7 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.model;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -18,7 +18,7 @@ import java.util.List;
 @JsonPropertyOrder({"type", "errorCode", "status", "message", "errors"})
 @RegisterForReflection
 @SuperBuilder
-public class ValidationErrorResponse extends ErrorResponse{
+public class ValidationErrorResponse extends ErrorResponse {
     @Schema(type = SchemaType.ARRAY, maxItems = 100)
     private List<String> errors;
 }
