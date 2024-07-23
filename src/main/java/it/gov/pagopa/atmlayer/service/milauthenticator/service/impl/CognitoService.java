@@ -19,7 +19,9 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolCli
 @Slf4j
 public class CognitoService {
     private CognitoIdentityProviderClient cognitoClient;
-    private ObjectMapper objectMapper;
+
+    @Inject
+    ObjectMapper objectMapper;
     @Inject
     CognitoConfig config;
 
@@ -51,7 +53,7 @@ public class CognitoService {
             }
             try {
                 return objectMapper.writeValueAsString(client);
-            } catch (JsonProcessingException e) {
+            } catch (Exception e) {
                 log.error("mapping exception");
                 throw new RuntimeException(e);
             }
