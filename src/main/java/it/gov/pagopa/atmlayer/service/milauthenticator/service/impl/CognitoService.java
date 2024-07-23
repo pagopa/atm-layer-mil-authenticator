@@ -1,5 +1,7 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.milauthenticator.configuration.CognitoConfig;
 import jakarta.annotation.PostConstruct;
@@ -18,6 +20,8 @@ public class CognitoService {
 
     private CognitoIdentityProviderClient cognitoClient;
 
+    private ObjectMapper objectMapper;
+
     @Inject
     CognitoConfig config;
 
@@ -33,7 +37,7 @@ public class CognitoService {
                 .build();
     }
 
-    public Uni<UserPoolClientType> getClientCredentials() {
+    public Uni<String> getClientCredentials() {
         return Uni.createFrom().item(() -> {
             DescribeUserPoolClientRequest request = DescribeUserPoolClientRequest.builder()
                     .userPoolId("eu-south-1_sEZF9PqAf")
@@ -41,8 +45,13 @@ public class CognitoService {
                     .build();
 
             DescribeUserPoolClientResponse response = cognitoClient.describeUserPoolClient(request);
+            UserPoolClientType client = response.userPoolClient();
 
-            return response.userPoolClient();
+            try {
+                return objectMapper.writeValueAsString(client);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 }

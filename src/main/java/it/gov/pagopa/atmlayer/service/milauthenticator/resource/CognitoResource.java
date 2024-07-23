@@ -18,7 +18,7 @@ public class CognitoResource {
 
     @GET
     @Path("/client-credentials")
-    public Uni<RestResponse<UserPoolClientType>> getClientCredentials() {
+    public Uni<RestResponse<String>> getClientCredentials() {
         return cognitoService.getClientCredentials()
                 .map(RestResponse::ok);
     }
