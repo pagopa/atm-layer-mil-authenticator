@@ -15,15 +15,11 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.DescribeUse
 import software.amazon.awssdk.services.cognitoidentityprovider.model.DescribeUserPoolClientResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolClientType;
 
-
 @ApplicationScoped
 @Slf4j
 public class CognitoService {
-
     private CognitoIdentityProviderClient cognitoClient;
-
     private ObjectMapper objectMapper;
-
     @Inject
     CognitoConfig config;
 
@@ -45,14 +41,18 @@ public class CognitoService {
                     .userPoolId("eu-south-1_sEZF9PqAf")
                     .clientId("6bn45fharnm6gj4a2ipifj5nbt")
                     .build();
-
-            DescribeUserPoolClientResponse response = cognitoClient.describeUserPoolClient(request);
-            UserPoolClientType client = response.userPoolClient();
-            log.info(String.valueOf(client));
-
+            UserPoolClientType client = null;
+            try {
+                DescribeUserPoolClientResponse response = cognitoClient.describeUserPoolClient(request);
+                client= response.userPoolClient();
+                log.info("Client value: {}", client);
+            } catch (Exception e) {
+                log.error("ERROR with getClientCredentials: {}", e.getMessage());
+            }
             try {
                 return objectMapper.writeValueAsString(client);
             } catch (JsonProcessingException e) {
+                log.error("mapping exception");
                 throw new RuntimeException(e);
             }
         });
