@@ -7,6 +7,7 @@ import it.gov.pagopa.atmlayer.service.milauthenticator.configuration.CognitoConf
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
@@ -16,6 +17,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolCli
 
 
 @ApplicationScoped
+@Slf4j
 public class CognitoService {
 
     private CognitoIdentityProviderClient cognitoClient;
@@ -46,6 +48,7 @@ public class CognitoService {
 
             DescribeUserPoolClientResponse response = cognitoClient.describeUserPoolClient(request);
             UserPoolClientType client = response.userPoolClient();
+            log.info(String.valueOf(client));
 
             try {
                 return objectMapper.writeValueAsString(client);
