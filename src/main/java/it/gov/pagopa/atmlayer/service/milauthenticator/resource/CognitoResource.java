@@ -8,6 +8,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolClientType;
 
 @ApplicationScoped
@@ -20,9 +21,9 @@ public class CognitoResource {
 
     @GET
     @Path("/client-credentials")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Uni<UserPoolClientType> getClientCredentials() {
-        return cognitoService.getClientCredentials();
+    public Uni<Response> getClientCredentials() {
+        return cognitoService.getClientCredentials()
+                .map(client -> Response.ok().entity(client).build());
     }
 }
 
