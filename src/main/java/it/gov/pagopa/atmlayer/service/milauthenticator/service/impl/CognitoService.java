@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.milauthenticator.configuration.CognitoConfig;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.ClientCredentialsDTO;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -37,7 +38,7 @@ public class CognitoService {
                 .build();
     }
 
-    public Uni<String> getClientCredentials() {
+    public Uni<ClientCredentialsDTO> getClientCredentials() {
         return Uni.createFrom().item(() -> {
             DescribeUserPoolClientRequest request = DescribeUserPoolClientRequest.builder()
                     .userPoolId("eu-south-1_sEZF9PqAf")
@@ -52,7 +53,10 @@ public class CognitoService {
                 log.error("ERROR with getClientCredentials: {}", e.getMessage());
             }
             try {
-                return objectMapper.writeValueAsString(client);
+                ClientCredentialsDTO clientCredentialsDTO = new ClientCredentialsDTO();
+                clientCredentialsDTO.setClientId(client != null ? client.clientId() : "");
+                clientCredentialsDTO.setClientSecret(client != null ? client.clientSecret() : "");
+                return clientCredentialsDTO;
             } catch (Exception e) {
                 log.error("mapping exception");
                 throw new RuntimeException(e);

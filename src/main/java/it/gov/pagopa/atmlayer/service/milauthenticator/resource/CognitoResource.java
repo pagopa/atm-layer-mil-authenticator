@@ -1,11 +1,14 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.resource;
 
 import io.smallrye.mutiny.Uni;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.ClientCredentialsDTO;
 import it.gov.pagopa.atmlayer.service.milauthenticator.service.impl.CognitoService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import org.jboss.resteasy.reactive.RestResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolClientType;
 
@@ -18,9 +21,9 @@ public class CognitoResource {
 
     @GET
     @Path("/client-credentials")
-    public Uni<RestResponse<String>> getClientCredentials() {
-        return cognitoService.getClientCredentials()
-                .map(RestResponse::ok);
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<ClientCredentialsDTO> getClientCredentials() {
+        return cognitoService.getClientCredentials();
     }
 }
 
