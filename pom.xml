@@ -53,16 +53,15 @@
 <!--    <dependency>-->
 <!--      <groupId>io.quarkiverse.amazonservices</groupId>-->
 <!--      <artifactId>quarkus-amazon-common</artifactId>-->
-<!--      <version>2.12.2</version>-->
 <!--    </dependency>-->
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>url-connection-client</artifactId>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>software.amazon.awssdk.crt</groupId>-->
-<!--      <artifactId>aws-crt</artifactId>-->
-<!--    </dependency>-->
+    <dependency>
+      <groupId>software.amazon.awssdk.crt</groupId>
+      <artifactId>aws-crt</artifactId>
+    </dependency>
 <!--    <dependency>-->
 <!--      <groupId>software.amazon.awssdk</groupId>-->
 <!--      <artifactId>netty-nio-client</artifactId>-->
