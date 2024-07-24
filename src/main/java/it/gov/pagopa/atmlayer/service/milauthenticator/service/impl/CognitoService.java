@@ -8,6 +8,9 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
@@ -24,12 +27,21 @@ public class CognitoService {
     @Inject
     CognitoConfig config;
 
+//    @PostConstruct
+//    void init() {
+//        this.cognitoClient = CognitoIdentityProviderClient.builder()
+//                .httpClientBuilder(UrlConnectionHttpClient.builder())
+//                .region(Region.of(config.region())
+//                )
+//                .build();
+//    }
+
     @PostConstruct
     void init() {
         this.cognitoClient = CognitoIdentityProviderClient.builder()
                 .httpClientBuilder(UrlConnectionHttpClient.builder())
-                .region(Region.of(config.region())
-                )
+                .region(Region.of(config.region()))
+                .credentialsProvider(DefaultCredentialsProvider.create())
                 .build();
     }
 
