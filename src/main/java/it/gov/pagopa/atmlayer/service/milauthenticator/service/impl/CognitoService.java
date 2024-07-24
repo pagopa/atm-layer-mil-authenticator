@@ -1,6 +1,5 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.milauthenticator.configuration.CognitoConfig;
@@ -12,11 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.CreateUserPoolClientRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.CreateUserPoolClientResponse;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.DescribeUserPoolClientRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.DescribeUserPoolClientResponse;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolClientType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
+
 
 @ApplicationScoped
 @Slf4j
