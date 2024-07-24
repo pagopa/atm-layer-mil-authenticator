@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
@@ -27,7 +28,7 @@ public class AwsClientConf {
         this.cognitoClient = CognitoIdentityProviderClient.builder()
                 .httpClientBuilder(UrlConnectionHttpClient.builder())
                 .region(Region.EU_SOUTH_1)
-                .credentialsProvider(StaticCredentialsProvider.create(StsCredentials.getClientCredentials()))
+                .credentialsProvider(WebIdentityTokenFileCredentialsProvider.create())
                 .build();
     }
 
