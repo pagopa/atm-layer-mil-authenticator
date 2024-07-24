@@ -3,6 +3,7 @@ package it.gov.pagopa.atmlayer.service.milauthenticator.configuration;
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
+import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sts.StsClient;
 import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
@@ -14,6 +15,7 @@ public class StsCredentials {
 
     public static AwsSessionCredentials getClientCredentials() {
         StsClient stsClient = StsClient.builder()
+                .httpClientBuilder(UrlConnectionHttpClient.builder())
                 .region(Region.EU_SOUTH_1)
                 .build();
 
