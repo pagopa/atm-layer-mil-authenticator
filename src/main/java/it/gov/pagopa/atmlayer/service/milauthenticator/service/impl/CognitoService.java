@@ -2,6 +2,7 @@ package it.gov.pagopa.atmlayer.service.milauthenticator.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smallrye.mutiny.Uni;
+import it.gov.pagopa.atmlayer.service.milauthenticator.configuration.AwsClientConf;
 import it.gov.pagopa.atmlayer.service.milauthenticator.configuration.CognitoConfig;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.ClientCredentialsDTO;
 import jakarta.annotation.PostConstruct;
@@ -20,30 +21,12 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 @ApplicationScoped
 @Slf4j
 public class CognitoService {
-    private CognitoIdentityProviderClient cognitoClient;
+    @Inject
+    AwsClientConf awsClientConf;
 
     @Inject
     ObjectMapper objectMapper;
-    @Inject
-    CognitoConfig config;
 
-//    @PostConstruct
-//    void init() {
-//        this.cognitoClient = CognitoIdentityProviderClient.builder()
-//                .httpClientBuilder(UrlConnectionHttpClient.builder())
-//                .region(Region.of(config.region())
-//                )
-//                .build();
-//    }
-
-    @PostConstruct
-    void init() {
-        this.cognitoClient = CognitoIdentityProviderClient.builder()
-                .httpClientBuilder(UrlConnectionHttpClient.builder())
-                .region(Region.of(config.region()))
-                .credentialsProvider(DefaultCredentialsProvider.create())
-                .build();
-    }
 
     public Uni<ClientCredentialsDTO> getClientCredentials() {
         return Uni.createFrom().item(() -> {
@@ -53,7 +36,7 @@ public class CognitoService {
                     .build();
             UserPoolClientType client = null;
             try {
-                DescribeUserPoolClientResponse response = cognitoClient.describeUserPoolClient(request);
+                DescribeUserPoolClientResponse response = awsClientConf.getCognitoClient().describeUserPoolClient(request);
                 client= response.userPoolClient();
                 log.info("Client value: {}", client);
             } catch (Exception e) {
@@ -80,7 +63,7 @@ public class CognitoService {
                     .build();
             UserPoolClientType client = null;
             try {
-                CreateUserPoolClientResponse response = cognitoClient.createUserPoolClient(request);
+                CreateUserPoolClientResponse response = awsClientConf.getCognitoClient().createUserPoolClient(request);
                 client= response.userPoolClient();
                 log.info("Client value: {}", client);
             } catch (Exception e) {
