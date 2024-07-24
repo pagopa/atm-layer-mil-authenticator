@@ -50,10 +50,10 @@
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>cognitoidentityprovider</artifactId>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>io.quarkiverse.amazonservices</groupId>-->
-<!--      <artifactId>quarkus-amazon-common</artifactId>-->
-<!--    </dependency>-->
+<!--    <dependency>
+      <groupId>io.quarkiverse.amazonservices</groupId>
+      <artifactId>quarkus-amazon-common</artifactId>
+    </dependency>-->
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>url-connection-client</artifactId>

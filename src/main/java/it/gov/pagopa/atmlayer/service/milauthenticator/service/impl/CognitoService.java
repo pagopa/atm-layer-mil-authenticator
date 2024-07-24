@@ -3,18 +3,10 @@ package it.gov.pagopa.atmlayer.service.milauthenticator.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.milauthenticator.configuration.AwsClientConf;
-import it.gov.pagopa.atmlayer.service.milauthenticator.configuration.CognitoConfig;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.ClientCredentialsDTO;
-import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 
 
@@ -26,7 +18,6 @@ public class CognitoService {
 
     @Inject
     ObjectMapper objectMapper;
-
 
     public Uni<ClientCredentialsDTO> getClientCredentials() {
         return Uni.createFrom().item(() -> {
