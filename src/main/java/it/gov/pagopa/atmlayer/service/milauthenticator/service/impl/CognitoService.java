@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.CreateUserPoolClientRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.CreateUserPoolClientResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.DescribeUserPoolClientRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.DescribeUserPoolClientResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolClientType;
@@ -32,9 +34,6 @@ public class CognitoService {
                 .httpClientBuilder(UrlConnectionHttpClient.builder())
                 .region(Region.of(config.region())
                 )
-//                .credentialsProvider(StaticCredentialsProvider.create(
-//                        AwsBasicCredentials.create(config.accessKeyId, config.secretAccessKey)
-//                ))
                 .build();
     }
 
@@ -56,6 +55,7 @@ public class CognitoService {
                 ClientCredentialsDTO clientCredentialsDTO = new ClientCredentialsDTO();
                 clientCredentialsDTO.setClientId(client != null ? client.clientId() : "");
                 clientCredentialsDTO.setClientSecret(client != null ? client.clientSecret() : "");
+                clientCredentialsDTO.setClientName(client != null ? client.clientName() : "");
                 return clientCredentialsDTO;
             } catch (Exception e) {
                 log.error("mapping exception");
@@ -63,5 +63,33 @@ public class CognitoService {
             }
         });
     }
+
+    public Uni<ClientCredentialsDTO> generateClient(String clientName) {
+        return Uni.createFrom().item(() -> {
+            CreateUserPoolClientRequest request = CreateUserPoolClientRequest.builder()
+                    .userPoolId("eu-south-1_sEZF9PqAf")
+                    .clientName(clientName)
+                    .build();
+            UserPoolClientType client = null;
+            try {
+                CreateUserPoolClientResponse response = cognitoClient.createUserPoolClient(request);
+                client= response.userPoolClient();
+                log.info("Client value: {}", client);
+            } catch (Exception e) {
+                log.error("ERROR with getClientCredentials: {}", e.getMessage());
+            }
+            try {
+                ClientCredentialsDTO clientCredentialsDTO = new ClientCredentialsDTO();
+                clientCredentialsDTO.setClientId(client != null ? client.clientId() : "");
+                clientCredentialsDTO.setClientSecret(client != null ? client.clientSecret() : "");
+                clientCredentialsDTO.setClientName(client != null ? client.clientName() : "");
+                return clientCredentialsDTO;
+            } catch (Exception e) {
+                log.error("mapping exception");
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
 }
 

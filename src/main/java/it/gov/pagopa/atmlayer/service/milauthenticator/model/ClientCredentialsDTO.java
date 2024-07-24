@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class ClientCredentialsDTO {
     private String clientId;
     private String clientSecret;
+    private String clientName;
 }
