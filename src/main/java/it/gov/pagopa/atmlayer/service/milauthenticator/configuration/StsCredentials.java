@@ -1,3 +1,4 @@
+/*
 package it.gov.pagopa.atmlayer.service.milauthenticator.configuration;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -43,3 +44,4 @@ public class StsCredentials {
     }
 
 }
+*/
