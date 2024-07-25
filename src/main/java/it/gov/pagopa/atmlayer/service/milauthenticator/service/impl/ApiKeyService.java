@@ -8,7 +8,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
-import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 import software.amazon.awssdk.services.apigateway.model.*;
@@ -16,10 +16,7 @@ import software.amazon.awssdk.services.apigateway.model.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static it.gov.pagopa.atmlayer.service.milauthenticator.enums.UsagePlanPatchOperations.BURST_LIMIT;
-import static it.gov.pagopa.atmlayer.service.milauthenticator.enums.UsagePlanPatchOperations.QUOTA_LIMIT;
-import static it.gov.pagopa.atmlayer.service.milauthenticator.enums.UsagePlanPatchOperations.QUOTA_PERIOD;
-import static it.gov.pagopa.atmlayer.service.milauthenticator.enums.UsagePlanPatchOperations.RATE_LIMIT;
+import static it.gov.pagopa.atmlayer.service.milauthenticator.enums.UsagePlanPatchOperations.*;
 
 @ApplicationScoped
 @Slf4j
@@ -32,7 +29,7 @@ public class ApiKeyService {
 
     public ApiKeyService() {
         this.apiGatewayClient = ApiGatewayClient.builder()
-                .httpClientBuilder(UrlConnectionHttpClient.builder())
+                .httpClient(ApacheHttpClient.builder().build())
                 .region(Region.EU_SOUTH_1)
                 .credentialsProvider(WebIdentityTokenFileCredentialsProvider.create())
                 .build();

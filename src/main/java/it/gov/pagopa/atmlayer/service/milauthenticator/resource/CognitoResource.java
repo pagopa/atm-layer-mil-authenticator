@@ -34,10 +34,7 @@ public class CognitoResource {
     @DELETE
     @Path("/client-credentials/{clientId}")
     public Uni<Void> deleteClient(@PathParam("clientId") String clientId) {
-        return cognitoService.deleteClient(clientId)
-                .onItem()
-                .ignore()
-                .andSwitchTo(Uni.createFrom().voidItem());
+        return cognitoService.deleteClient(clientId);
     }
 
 }
