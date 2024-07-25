@@ -6,14 +6,8 @@ import it.gov.pagopa.atmlayer.service.milauthenticator.service.impl.CognitoServi
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import org.jboss.resteasy.reactive.RestResponse;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.UserPoolClientType;
 
 @ApplicationScoped
 @Path("/cognito")
@@ -23,10 +17,10 @@ public class CognitoResource {
     CognitoService cognitoService;
 
     @GET
-    @Path("/client-credentials")
+    @Path("/client-credentials/{clientId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<ClientCredentialsDTO> getClientCredentials() {
-        return cognitoService.getClientCredentials();
+    public Uni<ClientCredentialsDTO> getClientCredentials(@PathParam("clientId") String clientId) {
+        return cognitoService.getClientCredentials(clientId);
     }
 
     @POST

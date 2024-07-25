@@ -45,6 +45,9 @@ milAuth:
     clientId: CLIENT_ID
     clientSecret: CLIENT_SECRET
 
+apiGatewayId: ny3elnw72l
+cognitoUserPoolId: eu-south-1_Redkg1iTN
+
 redis:
   credentialsSecretEnabled: true
   credentialsSecretName: "pagopa-uat-atm-layer-mil-authenticator-redis"

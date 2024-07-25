@@ -7,6 +7,7 @@ import it.gov.pagopa.atmlayer.service.milauthenticator.model.ClientCredentialsDT
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 
 
@@ -19,11 +20,14 @@ public class CognitoService {
     @Inject
     ObjectMapper objectMapper;
 
-    public Uni<ClientCredentialsDTO> getClientCredentials() {
+    @ConfigProperty(name = "cognito.user-pool.id")
+    String userPoolId;
+
+    public Uni<ClientCredentialsDTO> getClientCredentials(String clientId) {
         return Uni.createFrom().item(() -> {
             DescribeUserPoolClientRequest request = DescribeUserPoolClientRequest.builder()
-                    .userPoolId("eu-south-1_sEZF9PqAf")
-                    .clientId("6bn45fharnm6gj4a2ipifj5nbt")
+                    .userPoolId(userPoolId)
+                    .clientId(clientId)
                     .build();
             UserPoolClientType client = null;
             try {

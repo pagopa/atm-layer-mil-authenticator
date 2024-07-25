@@ -5,6 +5,7 @@ import it.gov.pagopa.atmlayer.service.milauthenticator.model.ApiKeyDTO;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.UsagePlanDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
@@ -17,9 +18,11 @@ public class ApiKeyService {
 
     private final ApiGatewayClient apiGatewayClient;
 
-    private final String apiGatewayId = "8o3pf45im8";
+    @ConfigProperty(name = "api-gateway.id")
+    String apiGatewayId;
 
-    private final String apiGatewayStage = "dev";
+    @ConfigProperty(name = "app.environment")
+    String apiGatewayStage;
 
     public ApiKeyService() {
         this.apiGatewayClient = ApiGatewayClient.builder()
