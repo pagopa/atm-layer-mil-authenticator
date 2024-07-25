@@ -3,12 +3,14 @@ package it.gov.pagopa.atmlayer.service.milauthenticator.resource;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.ApiKeyDTO;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.UsagePlanDTO;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.UsagePlanUpdateDTO;
 import it.gov.pagopa.atmlayer.service.milauthenticator.service.impl.ApiKeyService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 @ApplicationScoped
 @Path("/api-gateway")
@@ -43,6 +45,14 @@ public class ApiKeyResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<UsagePlanDTO> getUsagePlan(@PathParam("usagePlanId") String usagePlanId) {
         return apiKeyService.getUsagePlan(usagePlanId);
+    }
+
+    @PUT
+    @Path("/usage-plan/{usagePlanId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<UsagePlanDTO> updateUsagePlan(@PathParam("usagePlanId") String usagePlanId, @RequestBody UsagePlanUpdateDTO usagePlanUpdateDTO) {
+        return apiKeyService.updateUsagePlan(usagePlanId, usagePlanUpdateDTO);
     }
 
 }
