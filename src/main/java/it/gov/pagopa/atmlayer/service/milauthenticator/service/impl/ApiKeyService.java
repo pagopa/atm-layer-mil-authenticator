@@ -119,6 +119,7 @@ public class ApiKeyService {
     }
 
     public List<PatchOperation> buildPatchOperation(UsagePlanUpdateDTO updateDTO) {
+        log.info("-------- preparing patchOperations");
         // Build patch operations to update the usage plan
         List<PatchOperation> patchOperations = new ArrayList<>();
         if (updateDTO.getName() != null) {
@@ -128,6 +129,7 @@ public class ApiKeyService {
         patchOperations.add(PatchOperation.builder().op(QUOTA_PERIOD.getOp()).path(QUOTA_PERIOD.getPath()).value(updateDTO.getQuotaPeriod()).build());
         patchOperations.add(PatchOperation.builder().op(BURST_LIMIT.getOp()).path(BURST_LIMIT.getPath()).value(String.valueOf(updateDTO.getBurstLimit())).build());
         patchOperations.add(PatchOperation.builder().op(RATE_LIMIT.getOp()).path(RATE_LIMIT.getPath()).value(String.valueOf(updateDTO.getRateLimit())).build());
+        log.info("-------- prepared patchOperations: {}", patchOperations);
         return patchOperations;
     }
 
