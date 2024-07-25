@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsagePlanUpdateDTO {
-    private String rateLimit;
-    private String burstLimit;
-    private String quotaLimit;
+    private double rateLimit;
+    private int burstLimit;
+    private int quotaLimit;
     private String quotaPeriod;
     private String name;
 }
