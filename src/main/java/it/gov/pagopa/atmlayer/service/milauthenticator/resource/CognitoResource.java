@@ -8,6 +8,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 @Path("/cognito")
@@ -28,6 +29,21 @@ public class CognitoResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<ClientCredentialsDTO> generateClient(@HeaderParam("clientName") @NotBlank String clientName) {
         return cognitoService.generateClient(clientName);
+    }
+
+    @DELETE
+    @Path("/client-credentials/{clientId}")
+    public Uni<Response> deleteClient(@PathParam("clientId") String clientId) {
+        return cognitoService.deleteClient(clientId)
+                .onItem().transform(deleted -> {
+                    if (deleted) {
+                        return Response.noContent().build();
+                    } else {
+                        return Response.status(Response.Status.NOT_FOUND)
+                                .entity("Client with ID " + clientId + " not found or could not be deleted.")
+                                .build();
+                    }
+                });
     }
 
 }

@@ -78,5 +78,22 @@ public class CognitoService {
         });
     }
 
+    public Uni<Boolean> deleteClient(String clientId) {
+        return Uni.createFrom().item(() -> {
+            try {
+                DeleteUserPoolClientRequest request = DeleteUserPoolClientRequest.builder()
+                        .userPoolId(userPoolId)
+                        .clientId(clientId)
+                        .build();
+                awsClientConf.getCognitoClient().deleteUserPoolClient(request);
+                log.info("Client with ID {} deleted successfully", clientId);
+                return true;
+            } catch (Exception e) {
+                log.error("ERROR with deleteClient: {}", e.getMessage());
+                return false;
+            }
+        });
+    }
+
 }
 
