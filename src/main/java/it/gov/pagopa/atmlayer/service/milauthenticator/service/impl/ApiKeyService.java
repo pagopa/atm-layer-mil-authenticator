@@ -1,9 +1,8 @@
 package it.gov.pagopa.atmlayer.service.milauthenticator.service.impl;
 
 import io.smallrye.mutiny.Uni;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.ApiKeyDTO;
 import jakarta.enterprise.context.ApplicationScoped;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
@@ -26,7 +25,7 @@ public class ApiKeyService {
                 .build();
     }
 
-    public Uni<String> createApiKey(String clientName) {
+    public Uni<ApiKeyDTO> createApiKey(String clientName) {
         return Uni.createFrom().item(() -> {
             CreateApiKeyRequest request = CreateApiKeyRequest.builder()
                     .name(clientName + "-api-key")
@@ -34,11 +33,11 @@ public class ApiKeyService {
                     .build();
 
             CreateApiKeyResponse response = apiGatewayClient.createApiKey(request);
-            return response.id(); // La chiave API viene restituita come ID
+            return new ApiKeyDTO(response.id(), response.value(), response.name()); // La chiave API viene restituita come ID
         });
     }
 
-    public Uni<String> getApiKey(String clientName) {
+    public Uni<ApiKeyDTO> getApiKey(String clientName) {
         return Uni.createFrom().item(() -> {
             // Cerca le chiavi API con il nome specificato
             GetApiKeysRequest request = GetApiKeysRequest.builder()
@@ -48,7 +47,7 @@ public class ApiKeyService {
 
             return apiGatewayClient.getApiKeysPaginator(request).items().stream()
                     .findFirst()
-                    .map(ApiKey::id)
+                    .map(apiKey -> new ApiKeyDTO(apiKey.id(), apiKey.value(), apiKey.name()))
                     .orElse(null);
         });
     }
