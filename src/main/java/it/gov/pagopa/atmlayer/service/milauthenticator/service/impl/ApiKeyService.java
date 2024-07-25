@@ -89,4 +89,19 @@ public class ApiKeyService {
             return usagePlan;
         });
     }
+
+    public Uni<UsagePlanDTO> getUsagePlan(String usagePlanId) {
+        return Uni.createFrom().item(() -> {
+            GetUsagePlanRequest usagePlanRequest = GetUsagePlanRequest.builder()
+                    .usagePlanId(usagePlanId)
+                    .build();
+
+            GetUsagePlanResponse usagePlanResponse = apiGatewayClient.getUsagePlan(usagePlanRequest);
+            UsagePlanDTO usagePlan = new UsagePlanDTO(usagePlanResponse.id(), usagePlanResponse.name(), usagePlanResponse.description());
+
+            log.info("Usage plan: {}", usagePlan);
+
+            return usagePlan;
+        });
+    }
 }

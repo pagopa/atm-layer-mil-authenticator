@@ -38,4 +38,11 @@ public class ApiKeyResource {
         return apiKeyService.createUsagePlan(planName, apiKeyId, limit, period, burstLimit, rateLimit);
     }
 
+    @GET
+    @Path("/usage-plan/{usagePlanId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<UsagePlanDTO> getUsagePlan(@PathParam("usagePlanId") String usagePlanId) {
+        return apiKeyService.getUsagePlan(usagePlanId);
+    }
+
 }
