@@ -11,6 +11,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import software.amazon.awssdk.services.apigateway.model.QuotaPeriodType;
 
 @ApplicationScoped
 @Path("/api-gateway")
@@ -36,7 +37,7 @@ public class ApiKeyResource {
     @POST
     @Path("/create-usage-plan")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<UsagePlanDTO> createUsagePlan(@HeaderParam("planName") String planName, @HeaderParam("apiKeyId") String apiKeyId, @HeaderParam("limit") int limit, @HeaderParam("period") String period, @HeaderParam("burstLimit") int burstLimit, @HeaderParam("rateLimit") double rateLimit) {
+    public Uni<UsagePlanDTO> createUsagePlan(@HeaderParam("planName") String planName, @HeaderParam("apiKeyId") String apiKeyId, @HeaderParam("limit") int limit, @HeaderParam("period") QuotaPeriodType period, @HeaderParam("burstLimit") int burstLimit, @HeaderParam("rateLimit") double rateLimit) {
         return apiKeyService.createUsagePlan(planName, apiKeyId, limit, period, burstLimit, rateLimit);
     }
 

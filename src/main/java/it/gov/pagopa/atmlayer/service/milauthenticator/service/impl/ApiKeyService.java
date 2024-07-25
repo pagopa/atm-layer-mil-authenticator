@@ -64,12 +64,12 @@ public class ApiKeyService {
         });
     }
 
-    public Uni<UsagePlanDTO> createUsagePlan(String planName, String apiKeyId, int limit, String period, int burstLimit, double rateLimit) {
+    public Uni<UsagePlanDTO> createUsagePlan(String planName, String apiKeyId, int limit, QuotaPeriodType period, int burstLimit, double rateLimit) {
         return Uni.createFrom().item(() -> {
             CreateUsagePlanRequest usagePlanRequest = CreateUsagePlanRequest.builder()
                     .name(planName)
                     .description("Usage plan for " + planName)
-                    .quota(q -> q.limit(limit).period(period))
+                    .quota(q -> q.limit(limit).period(period.toString()))
                     .throttle(t -> t.burstLimit(burstLimit).rateLimit(rateLimit))
                     .apiStages(ApiStage.builder().apiId(apiGatewayId).stage(apiGatewayStage).build())
                     .build();
@@ -123,7 +123,7 @@ public class ApiKeyService {
             patchOperations.add(PatchOperation.builder().op(Op.REPLACE).path("/name").value(updateDTO.getName()).build());
         }
         patchOperations.add(PatchOperation.builder().op(QUOTA_LIMIT.getOp()).path(QUOTA_LIMIT.getPath()).value(String.valueOf(updateDTO.getQuotaLimit())).build());
-        patchOperations.add(PatchOperation.builder().op(QUOTA_PERIOD.getOp()).path(QUOTA_PERIOD.getPath()).value(updateDTO.getQuotaPeriod()).build());
+        patchOperations.add(PatchOperation.builder().op(QUOTA_PERIOD.getOp()).path(QUOTA_PERIOD.getPath()).value(updateDTO.getQuotaPeriod().toString()).build());
         patchOperations.add(PatchOperation.builder().op(BURST_LIMIT.getOp()).path(BURST_LIMIT.getPath()).value(String.valueOf(updateDTO.getBurstLimit())).build());
         patchOperations.add(PatchOperation.builder().op(RATE_LIMIT.getOp()).path(RATE_LIMIT.getPath()).value(String.valueOf(updateDTO.getRateLimit())).build());
         log.info("-------- prepared patchOperations: {}", patchOperations);
