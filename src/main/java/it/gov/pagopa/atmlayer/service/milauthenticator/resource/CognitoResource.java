@@ -35,8 +35,9 @@ public class CognitoResource {
     @Path("/client-credentials/{clientId}")
     public Uni<Response> deleteClient(@PathParam("clientId") String clientId) {
         return cognitoService.deleteClient(clientId)
-                .onItem().transform(deleted -> {
-                    if (deleted) {
+                .onItem()
+                .transform(deletedClient -> {
+                    if (deletedClient) {
                         return Response.noContent().build();
                     } else {
                         return Response.status(Response.Status.NOT_FOUND)
