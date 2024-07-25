@@ -63,13 +63,13 @@ public class ApiKeyService {
         });
     }
 
-    public Uni<UsagePlanDTO> createUsagePlan(String planName, String apiKeyId) {
+    public Uni<UsagePlanDTO> createUsagePlan(String planName, String apiKeyId, int limit, String period, int burstLimit, double rateLimit ) {
         return Uni.createFrom().item(() -> {
             CreateUsagePlanRequest usagePlanRequest = CreateUsagePlanRequest.builder()
                     .name(planName)
                     .description("Usage plan for " + planName)
-                    .quota(q -> q.limit(1000).period("MONTH"))
-                    .throttle(t -> t.burstLimit(200).rateLimit(100.0))
+                    .quota(q -> q.limit(limit).period(period))
+                    .throttle(t -> t.burstLimit(burstLimit).rateLimit(rateLimit))
                     .apiStages(ApiStage.builder().apiId(apiGatewayId).stage(apiGatewayStage).build())
                     .build();
 

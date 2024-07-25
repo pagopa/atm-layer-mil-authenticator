@@ -34,8 +34,8 @@ public class ApiKeyResource {
     @POST
     @Path("/create-usage-plan")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<UsagePlanDTO> createUsagePlan(@HeaderParam("planName") String planName, @HeaderParam("apiKeyId") String apiKeyId) {
-        return apiKeyService.createUsagePlan(planName, apiKeyId);
+    public Uni<UsagePlanDTO> createUsagePlan(@HeaderParam("planName") String planName, @HeaderParam("apiKeyId") String apiKeyId, @HeaderParam("limit") int limit, @HeaderParam("period") String period, @HeaderParam("burstLimit") int burstLimit, @HeaderParam("rateLimit") double rateLimit) {
+        return apiKeyService.createUsagePlan(planName, apiKeyId, limit, period, burstLimit, rateLimit);
     }
 
 }
