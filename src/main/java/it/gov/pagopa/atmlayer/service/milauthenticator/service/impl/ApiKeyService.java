@@ -2,17 +2,17 @@ package it.gov.pagopa.atmlayer.service.milauthenticator.service.impl;
 
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.atmlayer.service.milauthenticator.model.ApiKeyDTO;
+import it.gov.pagopa.atmlayer.service.milauthenticator.model.UsagePlanDTO;
 import jakarta.enterprise.context.ApplicationScoped;
+import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
-import software.amazon.awssdk.services.apigateway.model.ApiKey;
-import software.amazon.awssdk.services.apigateway.model.CreateApiKeyRequest;
-import software.amazon.awssdk.services.apigateway.model.CreateApiKeyResponse;
-import software.amazon.awssdk.services.apigateway.model.GetApiKeysRequest;
+import software.amazon.awssdk.services.apigateway.model.*;
 
 @ApplicationScoped
+@Slf4j
 public class ApiKeyService {
 
     private final ApiGatewayClient apiGatewayClient;
@@ -47,8 +47,37 @@ public class ApiKeyService {
 
             return apiGatewayClient.getApiKeysPaginator(request).items().stream()
                     .findFirst()
-                    .map(apiKey -> new ApiKeyDTO(apiKey.id(), apiKey.value(), apiKey.name()))
+                    .map(apiKey -> {
+                        log.info("Api key: {}", apiKey);
+                       return new ApiKeyDTO(apiKey.id(), apiKey.value(), apiKey.name());
+                    })
                     .orElse(null);
+        });
+    }
+
+    public Uni<UsagePlanDTO> createUsagePlan(String planName, String apiKeyId) {
+        return Uni.createFrom().item(() -> {
+            CreateUsagePlanRequest usagePlanRequest = CreateUsagePlanRequest.builder()
+                    .name(planName)
+                    .description("Usage plan for " + planName)
+                    .quota(q -> q.limit(1000).period("MONTH"))
+                    .throttle(t -> t.burstLimit(200).rateLimit(100.0))
+                    .build();
+
+            CreateUsagePlanResponse usagePlanResponse = apiGatewayClient.createUsagePlan(usagePlanRequest);
+            UsagePlanDTO usagePlan = new UsagePlanDTO(usagePlanResponse.id(), usagePlanResponse.name(), usagePlanRequest.description(), usagePlanResponse.throttle(), usagePlanResponse.quota());
+
+            // Associa la chiave API al Usage Plan
+            CreateUsagePlanKeyRequest usagePlanKeyRequest = CreateUsagePlanKeyRequest.builder()
+                    .usagePlanId(usagePlanResponse.id())
+                    .keyId(apiKeyId)
+                    .keyType("API_KEY")
+                    .build();
+            apiGatewayClient.createUsagePlanKey(usagePlanKeyRequest);
+
+            log.info("Usage plan: {}", usagePlan);
+            
+            return usagePlan;
         });
     }
 }
