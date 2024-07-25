@@ -33,18 +33,11 @@ public class CognitoResource {
 
     @DELETE
     @Path("/client-credentials/{clientId}")
-    public Uni<Response> deleteClient(@PathParam("clientId") String clientId) {
+    public Uni<Void> deleteClient(@PathParam("clientId") String clientId) {
         return cognitoService.deleteClient(clientId)
                 .onItem()
-                .transform(deletedClient -> {
-                    if (deletedClient) {
-                        return Response.noContent().build();
-                    } else {
-                        return Response.status(Response.Status.NOT_FOUND)
-                                .entity("Client with ID " + clientId + " not found or could not be deleted.")
-                                .build();
-                    }
-                });
+                .ignore()
+                .andSwitchTo(Uni.createFrom().voidItem());
     }
 
 }
