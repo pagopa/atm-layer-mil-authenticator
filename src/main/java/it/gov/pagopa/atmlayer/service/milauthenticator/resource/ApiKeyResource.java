@@ -9,7 +9,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import software.amazon.awssdk.services.apigateway.model.QuotaPeriodType;
 
@@ -25,6 +24,13 @@ public class ApiKeyResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<ApiKeyDTO> getApiKey(@PathParam("clientName") String clientName) {
         return apiKeyService.getApiKey(clientName);
+    }
+
+    @DELETE
+    @Path("/api-key/delete/{apiKeyId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<Void> deleteApiKey(@PathParam("apiKeyId") String apiKeyId) {
+        return apiKeyService.deleteApiKey(apiKeyId);
     }
 
     @POST
@@ -49,10 +55,10 @@ public class ApiKeyResource {
     }
 
     @DELETE
-    @Path("/usage-plan/{usagePlanId}")
+    @Path("/usage-plan/{usagePlanId}/{apiKeyId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Void> deleteUsagePlan(@PathParam("usagePlanId") String usagePlanId) {
-        return apiKeyService.deleteUsagePlan(usagePlanId);
+    public Uni<Void> deleteUsagePlan(@PathParam("usagePlanId") String usagePlanId, @PathParam("apiKeyId") String apiKeyId) {
+        return apiKeyService.deleteUsagePlan(usagePlanId, apiKeyId);
     }
 
     @PUT

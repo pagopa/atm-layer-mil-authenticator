@@ -64,6 +64,16 @@ public class ApiKeyService {
         });
     }
 
+    public Uni<Void> deleteApiKey(String apiKeyId) {
+        return Uni.createFrom().item(() -> {
+                    DeleteApiKeyRequest request = DeleteApiKeyRequest.builder()
+                            .apiKey(apiKeyId)
+                            .build();
+                    apiGatewayClient.deleteApiKey(request);
+                    return null;
+        }).onFailure().invoke(th -> log.error("Failed to delete usage plan with id: {}", apiKeyId, th)).replaceWithVoid();
+    }
+
     public Uni<UsagePlanDTO> createUsagePlan(String planName, String apiKeyId, int limit, QuotaPeriodType period, int burstLimit, double rateLimit) {
         return Uni.createFrom().item(() -> {
             CreateUsagePlanRequest usagePlanRequest = CreateUsagePlanRequest.builder()
@@ -130,8 +140,25 @@ public class ApiKeyService {
         return patchOperations;
     }
 
-    public Uni<Void> deleteUsagePlan(String usagePlanId) {
+    public Uni<Void> deleteUsagePlan(String usagePlanId, String apiKeyId) {
         return Uni.createFrom().item(() -> {
+
+
+            /*DeleteUsagePlanKeyRequest usagePlanKeyRequest = DeleteUsagePlanKeyRequest.builder()
+                    .usagePlanId(usagePlanId)
+                    .keyId(apiKeyId)
+                    .build();
+            apiGatewayClient.deleteUsagePlanKey(usagePlanKeyRequest);*/
+
+
+            List<PatchOperation> patchOperations = new ArrayList<>();
+            patchOperations.add(PatchOperation.builder().op(Op.REMOVE).path("/apiStages").value(apiGatewayId+":"+apiGatewayStage).build());
+            UpdateUsagePlanRequest updateUsagePlanRequest = UpdateUsagePlanRequest.builder()
+                    .usagePlanId(usagePlanId)
+                    .patchOperations(patchOperations)
+                    .build();
+            apiGatewayClient.updateUsagePlan(updateUsagePlanRequest);
+
             DeleteUsagePlanRequest usagePlanRequest = DeleteUsagePlanRequest.builder()
                     .usagePlanId(usagePlanId)
                     .build();
