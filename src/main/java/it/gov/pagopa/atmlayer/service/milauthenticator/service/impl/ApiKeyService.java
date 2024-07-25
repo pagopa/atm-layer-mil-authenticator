@@ -11,19 +11,7 @@ import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsPr
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
-import software.amazon.awssdk.services.apigateway.model.ApiStage;
-import software.amazon.awssdk.services.apigateway.model.CreateApiKeyRequest;
-import software.amazon.awssdk.services.apigateway.model.CreateApiKeyResponse;
-import software.amazon.awssdk.services.apigateway.model.CreateUsagePlanKeyRequest;
-import software.amazon.awssdk.services.apigateway.model.CreateUsagePlanRequest;
-import software.amazon.awssdk.services.apigateway.model.CreateUsagePlanResponse;
-import software.amazon.awssdk.services.apigateway.model.GetApiKeysRequest;
-import software.amazon.awssdk.services.apigateway.model.GetUsagePlanRequest;
-import software.amazon.awssdk.services.apigateway.model.GetUsagePlanResponse;
-import software.amazon.awssdk.services.apigateway.model.Op;
-import software.amazon.awssdk.services.apigateway.model.PatchOperation;
-import software.amazon.awssdk.services.apigateway.model.UpdateUsagePlanRequest;
-import software.amazon.awssdk.services.apigateway.model.UpdateUsagePlanResponse;
+import software.amazon.awssdk.services.apigateway.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,5 +129,18 @@ public class ApiKeyService {
         patchOperations.add(PatchOperation.builder().op(BURST_LIMIT.getOp()).path(BURST_LIMIT.getPath()).value(String.valueOf(updateDTO.getBurstLimit())).build());
         patchOperations.add(PatchOperation.builder().op(RATE_LIMIT.getOp()).path(RATE_LIMIT.getPath()).value(String.valueOf(updateDTO.getRateLimit())).build());
         return patchOperations;
+    }
+
+    public Uni<Void> deleteUsagePlan(String usagePlanId) {
+        return Uni.createFrom().item(() -> {
+            DeleteUsagePlanRequest usagePlanRequest = DeleteUsagePlanRequest.builder()
+                    .usagePlanId(usagePlanId)
+                    .build();
+
+            DeleteUsagePlanResponse usagePlanResponse = apiGatewayClient.deleteUsagePlan(usagePlanRequest);
+
+            log.info("Usage plan: {}", usagePlanResponse);
+            return null; // Return null to indicate completion with no value
+        }).onFailure().invoke(th -> log.error("Failed to delete usage plan with id: {}", usagePlanId, th)).replaceWithVoid();
     }
 }

@@ -47,6 +47,13 @@ public class ApiKeyResource {
         return apiKeyService.getUsagePlan(usagePlanId);
     }
 
+    @DELETE
+    @Path("/usage-plan/{usagePlanId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<Void> deleteUsagePlan(@PathParam("usagePlanId") String usagePlanId) {
+        return apiKeyService.deleteUsagePlan(usagePlanId);
+    }
+
     @PUT
     @Path("/usage-plan/{usagePlanId}")
     @Consumes(MediaType.APPLICATION_JSON)
