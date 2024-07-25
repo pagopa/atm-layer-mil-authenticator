@@ -51,6 +51,7 @@ public class CognitoService {
             CreateUserPoolClientRequest request = CreateUserPoolClientRequest.builder()
                     .userPoolId("eu-south-1_sEZF9PqAf")
                     .clientName(clientName)
+                    .generateSecret(true)
                     .build();
             UserPoolClientType client = null;
             try {
