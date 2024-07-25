@@ -55,10 +55,10 @@ public class ApiKeyResource {
     }
 
     @DELETE
-    @Path("/usage-plan/{usagePlanId}/{apiKeyId}")
+    @Path("/usage-plan/{usagePlanId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Void> deleteUsagePlan(@PathParam("usagePlanId") String usagePlanId, @PathParam("apiKeyId") String apiKeyId) {
-        return apiKeyService.deleteUsagePlan(usagePlanId, apiKeyId);
+    public Uni<Void> deleteUsagePlan(@PathParam("usagePlanId") String usagePlanId) {
+        return apiKeyService.deleteUsagePlan(usagePlanId);
     }
 
     @PUT

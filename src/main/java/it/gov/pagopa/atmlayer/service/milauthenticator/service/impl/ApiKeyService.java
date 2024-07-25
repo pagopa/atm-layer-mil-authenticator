@@ -140,7 +140,7 @@ public class ApiKeyService {
         return patchOperations;
     }
 
-    public Uni<Void> deleteUsagePlan(String usagePlanId, String apiKeyId) {
+    public Uni<Void> deleteUsagePlan(String usagePlanId) {
         return Uni.createFrom().item(() -> {
 
 
