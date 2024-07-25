@@ -13,6 +13,5 @@ public class UsagePlanDTO {
     private String id;
     private String name;
     private String description;
-    private ThrottleSettings throttle;
-    private QuotaSettings quota;
+
 }

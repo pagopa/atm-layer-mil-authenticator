@@ -17,6 +17,10 @@ public class ApiKeyService {
 
     private final ApiGatewayClient apiGatewayClient;
 
+    private final String apiGatewayId = "8o3pf45im8";
+
+    private final String apiGatewayStage = "dev";
+
     public ApiKeyService() {
         this.apiGatewayClient = ApiGatewayClient.builder()
                 .httpClientBuilder(UrlConnectionHttpClient.builder())
@@ -42,6 +46,7 @@ public class ApiKeyService {
             // Cerca le chiavi API con il nome specificato
             GetApiKeysRequest request = GetApiKeysRequest.builder()
                     .nameQuery(clientName)
+                    .includeValues(true)
                     .limit(1) // Limita a un risultato
                     .build();
 
@@ -62,10 +67,11 @@ public class ApiKeyService {
                     .description("Usage plan for " + planName)
                     .quota(q -> q.limit(1000).period("MONTH"))
                     .throttle(t -> t.burstLimit(200).rateLimit(100.0))
+                    .apiStages(ApiStage.builder().apiId(apiGatewayId).stage(apiGatewayStage).build())
                     .build();
 
             CreateUsagePlanResponse usagePlanResponse = apiGatewayClient.createUsagePlan(usagePlanRequest);
-            UsagePlanDTO usagePlan = new UsagePlanDTO(usagePlanResponse.id(), usagePlanResponse.name(), usagePlanRequest.description(), usagePlanResponse.throttle(), usagePlanResponse.quota());
+            UsagePlanDTO usagePlan = new UsagePlanDTO(usagePlanResponse.id(), usagePlanResponse.name(), usagePlanRequest.description());
 
             // Associa la chiave API al Usage Plan
             CreateUsagePlanKeyRequest usagePlanKeyRequest = CreateUsagePlanKeyRequest.builder()
