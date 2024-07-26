@@ -134,10 +134,10 @@ public class ApiKeyService {
             patchOperations.add(PatchOperation.builder().op(Op.REPLACE).path("/name").value(updateDTO.getName()).build());
         }
         Optional.ofNullable(updateDTO.getName()).ifPresent(name -> patchOperations.add(PatchOperation.builder().op(NAME.getOp()).path(NAME.getPath()).value(name).build()));
-        Optional.of(updateDTO.getQuotaLimit()).ifPresent(quotaLimit -> patchOperations.add(PatchOperation.builder().op(QUOTA_LIMIT.getOp()).path(QUOTA_LIMIT.getPath()).value(String.valueOf(quotaLimit)).build()));
-        Optional.of(updateDTO.getQuotaPeriod()).ifPresent(quotaPeriod -> patchOperations.add(PatchOperation.builder().op(QUOTA_PERIOD.getOp()).path(QUOTA_PERIOD.getPath()).value(quotaPeriod.toString()).build()));
-        Optional.of(updateDTO.getBurstLimit()).ifPresent(burstLimit -> patchOperations.add(PatchOperation.builder().op(BURST_LIMIT.getOp()).path(BURST_LIMIT.getPath()).value(String.valueOf(burstLimit)).build()));
-        Optional.of(updateDTO.getRateLimit()).ifPresent(rateLimit ->patchOperations.add(PatchOperation.builder().op(RATE_LIMIT.getOp()).path(RATE_LIMIT.getPath()).value(String.valueOf(rateLimit)).build()));
+        Optional.ofNullable(updateDTO.getQuotaLimit()).ifPresent(quotaLimit -> patchOperations.add(PatchOperation.builder().op(QUOTA_LIMIT.getOp()).path(QUOTA_LIMIT.getPath()).value(String.valueOf(quotaLimit)).build()));
+        Optional.ofNullable(updateDTO.getQuotaPeriod()).ifPresent(quotaPeriod -> patchOperations.add(PatchOperation.builder().op(QUOTA_PERIOD.getOp()).path(QUOTA_PERIOD.getPath()).value(quotaPeriod.toString()).build()));
+        Optional.ofNullable(updateDTO.getBurstLimit()).ifPresent(burstLimit -> patchOperations.add(PatchOperation.builder().op(BURST_LIMIT.getOp()).path(BURST_LIMIT.getPath()).value(String.valueOf(burstLimit)).build()));
+        Optional.ofNullable(updateDTO.getRateLimit()).ifPresent(rateLimit ->patchOperations.add(PatchOperation.builder().op(RATE_LIMIT.getOp()).path(RATE_LIMIT.getPath()).value(String.valueOf(rateLimit)).build()));
         log.info("-------- prepared patchOperations: {}", patchOperations);
         return patchOperations;
     }

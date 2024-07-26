@@ -9,9 +9,9 @@ import software.amazon.awssdk.services.apigateway.model.QuotaPeriodType;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsagePlanUpdateDTO {
-    private double rateLimit;
-    private int burstLimit;
-    private int quotaLimit;
+    private Double rateLimit;
+    private Integer burstLimit;
+    private Integer quotaLimit;
     private QuotaPeriodType quotaPeriod;
     private String name;
 }
