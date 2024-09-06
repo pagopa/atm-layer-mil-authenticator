@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
+replicaCount: 0
 
 image:
   repository: 00000000000.dkr.ecr.eu-south-1.amazonaws.com/xxxxxxx
@@ -21,7 +21,7 @@ secretProviderClass:
   name: atm-layer-mil-authenticator-secrets
   env: dev
 
-milBasePath: https://mil-d-perf-ca.agreeablestone-406ca858.westeurope.azurecontainerapps.io/perf/v2
+milBasePath: https://mil-u-apim.azure-api.net
 
 tracing:
   enabled: "true"
@@ -44,6 +44,9 @@ milAuth:
   credentialsSecretKeys:
     clientId: CLIENT_ID
     clientSecret: CLIENT_SECRET
+
+apiGatewayId: 8o3pf45im8
+cognitoUserPoolId: eu-south-1_sEZF9PqAf
 
 redis:
   credentialsSecretEnabled: true
@@ -87,7 +90,7 @@ service:
   port: 8080
 
 ingress:
-  enabled: false
+  enabled: true
   name: pagopa-dev-atm-layer-mil-authenticator
   className: ""
   annotations: 
@@ -120,8 +123,8 @@ resources:
 
 autoscaling:
   enabled: false
-  minReplicas: 1
-  maxReplicas: 2
+  minReplicas: 0
+  maxReplicas: 0
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 

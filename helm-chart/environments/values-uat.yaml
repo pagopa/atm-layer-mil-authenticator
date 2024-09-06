@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 4
+replicaCount: 2
 
 image:
   repository: 00000000000.dkr.ecr.eu-south-1.amazonaws.com/xxxxxxx
@@ -44,6 +44,9 @@ milAuth:
   credentialsSecretKeys:
     clientId: CLIENT_ID
     clientSecret: CLIENT_SECRET
+
+apiGatewayId: ny3elnw72l
+cognitoUserPoolId: eu-south-1_Redkg1iTN
 
 redis:
   credentialsSecretEnabled: true
