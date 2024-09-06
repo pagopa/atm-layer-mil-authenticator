@@ -6,9 +6,9 @@ import it.gov.pagopa.atmlayer.service.milauthenticator.model.TokenDTO;
 
 public interface TokenService {
 
-    Uni<TokenDTO> getToken(AuthParameters authParameters);
+//    Uni<TokenDTO> getToken(AuthParameters authParameters);
 
     Uni<TokenDTO> generateToken(AuthParameters authParameters);
 
-    Uni<Void> deleteToken(AuthParameters authParameters);
+//    Uni<Void> deleteToken(AuthParameters authParameters);
 }

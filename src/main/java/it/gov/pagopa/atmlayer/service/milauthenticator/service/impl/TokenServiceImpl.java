@@ -41,31 +41,31 @@ public class TokenServiceImpl implements TokenService {
     @Inject
     AuthProperties authProperties;
 
-    @Inject
-    Redis redis;
+//    @Inject
+//    Redis redis;
 
-    @Override
-    public Uni<TokenDTO> getToken(AuthParameters authParameters) {
-        KeyToken keyToken = getKeyToken(authParameters);
-        return Uni.createFrom().completionStage(redis.send(Request.cmd(Command.create("GET")).arg(keyToken.toString())).toCompletionStage())
-                .onFailure().recoverWithUni(failure -> {
-                    String message = "Redis request failed, service unavailable";
-                    log.error(message);
-                    return Uni.createFrom().failure(new AtmLayerException(message, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.REDIS_UNAVAILABLE));
-                }).onItem().transform(response -> {
-                    TokenDTO tokenDTO = new TokenDTO();
-                    if (response != null) {
-                        String token = response.toString();
-                        if (token != null && !token.isEmpty()) {
-                            log.info("Token found in cache");
-                            tokenDTO.setAccessToken(token);
-                            return tokenDTO;
-                        }
-                    }
-                    log.info("Token not found in cache");
-                    throw new AtmLayerException("Token not found in cache", Response.Status.NOT_FOUND, AppErrorCodeEnum.TOKEN_NOT_FOUND);
-                });
-    }
+//    @Override
+//    public Uni<TokenDTO> getToken(AuthParameters authParameters) {
+//        KeyToken keyToken = getKeyToken(authParameters);
+//        return Uni.createFrom().completionStage(redis.send(Request.cmd(Command.create("GET")).arg(keyToken.toString())).toCompletionStage())
+//                .onFailure().recoverWithUni(failure -> {
+//                    String message = "Redis request failed, service unavailable";
+//                    log.error(message);
+//                    return Uni.createFrom().failure(new AtmLayerException(message, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.REDIS_UNAVAILABLE));
+//                }).onItem().transform(response -> {
+//                    TokenDTO tokenDTO = new TokenDTO();
+//                    if (response != null) {
+//                        String token = response.toString();
+//                        if (token != null && !token.isEmpty()) {
+//                            log.info("Token found in cache");
+//                            tokenDTO.setAccessToken(token);
+//                            return tokenDTO;
+//                        }
+//                    }
+//                    log.info("Token not found in cache");
+//                    throw new AtmLayerException("Token not found in cache", Response.Status.NOT_FOUND, AppErrorCodeEnum.TOKEN_NOT_FOUND);
+//                });
+//    }
 
     private static KeyToken getKeyToken(AuthParameters authParameters) {
         KeyToken keyToken = new KeyToken();
@@ -94,44 +94,42 @@ public class TokenServiceImpl implements TokenService {
                 })
                 .onItem()
                 .transformToUni(token -> {
-                    log.info("redis connection starting");
-                    return Uni.createFrom().completionStage(
-                            redis.send(Request.cmd(Command.create("SET"))
-                                    .arg(keyToken.toString())
-                                    .arg(token.getAccessToken())
-                                    .arg("EX")
-                                    .arg(token.getExpiresIn())
-                            ).toCompletionStage()
-                    ).onFailure().recoverWithUni(failure -> {
-                        String message = "Redis request failed, service unavailable";
-                        log.error(message);
-                        return Uni.createFrom().failure(new AtmLayerException(message, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.REDIS_UNAVAILABLE));
-                    }).onItem().transformToUni(ignore -> {
-                        log.info("redis connection success, request send");
+//                    log.info("redis connection starting");
+//                    return Uni.createFrom().completionStage(
+//                            redis.send(Request.cmd(Command.create("SET"))
+//                                    .arg(keyToken.toString())
+//                                    .arg(token.getAccessToken())
+//                                    .arg("EX")
+//                                    .arg(token.getExpiresIn())
+//                            ).toCompletionStage()
+//                    ).onFailure().recoverWithUni(failure -> {
+//                        String message = "Redis request failed, service unavailable";
+//                        log.error(message);
+//                        return Uni.createFrom().failure(new AtmLayerException(message, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.REDIS_UNAVAILABLE));
+//                    })
                         TokenDTO tokenDTO = new TokenDTO();
                         tokenDTO.setAccessToken(token.getAccessToken());
                         return Uni.createFrom().item(tokenDTO);
                     });
-                });
     }
 
-    @Override
-    public Uni<Void> deleteToken(AuthParameters authParameters) {
-        KeyToken keyToken = getKeyToken(authParameters);
-        return Uni.createFrom().completionStage(redis.send(Request.cmd(Command.create("DEL")).arg(keyToken.toString())).toCompletionStage())
-                .onFailure().recoverWithUni(failure -> {
-                    String message = "Redis request failed, service unavailable";
-                    log.error(message);
-                    return Uni.createFrom().failure(new AtmLayerException(message, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.REDIS_UNAVAILABLE));
-                }).onItem().transformToUni(response -> {
-                    if (Objects.equals(response.toString(), "0")){
-                        log.info("Token not found");
-                        throw new AtmLayerException("Token not found in cache", Response.Status.NOT_FOUND, AppErrorCodeEnum.TOKEN_NOT_FOUND);
-                    }
-                    log.info("Token deleted");
-                    return Uni.createFrom().voidItem();
-                });
-    }
+//    @Override
+//    public Uni<Void> deleteToken(AuthParameters authParameters) {
+//        KeyToken keyToken = getKeyToken(authParameters);
+//        return Uni.createFrom().completionStage(redis.send(Request.cmd(Command.create("DEL")).arg(keyToken.toString())).toCompletionStage())
+//                .onFailure().recoverWithUni(failure -> {
+//                    String message = "Redis request failed, service unavailable";
+//                    log.error(message);
+//                    return Uni.createFrom().failure(new AtmLayerException(message, Response.Status.INTERNAL_SERVER_ERROR, AppErrorCodeEnum.REDIS_UNAVAILABLE));
+//                }).onItem().transformToUni(response -> {
+//                    if (Objects.equals(response.toString(), "0")){
+//                        log.info("Token not found");
+//                        throw new AtmLayerException("Token not found in cache", Response.Status.NOT_FOUND, AppErrorCodeEnum.TOKEN_NOT_FOUND);
+//                    }
+//                    log.info("Token deleted");
+//                    return Uni.createFrom().voidItem();
+//                });
+//    }
 
 
     private String prepareAuthBody(AuthParameters authParameters) {
