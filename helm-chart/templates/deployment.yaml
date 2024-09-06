@@ -64,6 +64,10 @@ spec:
               value: "{{ .Values.tracing.endpointBasePath }}"
             - name: TRACING_ENABLE_JDBC_MONITORING
               value: "{{ .Values.tracing.enableJDBCMonitoring }}"
+            - name: API_GATEWAY_ID
+              value: "{{ .Values.apiGatewayId }}"
+            - name: USER_POOL_ID
+              value: "{{ .Values.cognitoUserPoolId }}"
             {{- if .Values.redis.credentialsSecretEnabled }}
             - name: REDIS_HOST
               valueFrom:

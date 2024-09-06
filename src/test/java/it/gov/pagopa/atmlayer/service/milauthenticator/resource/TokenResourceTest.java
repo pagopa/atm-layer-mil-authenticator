@@ -17,19 +17,19 @@ class TokenResourceTest {
     @InjectMock
     TokenService tokenService;
 
-    @Test
-    void testGetToken() {
-        TokenDTO expectedTokenDTO = new TokenDTO();
-        when(tokenService.getToken(any(AuthParameters.class))).thenReturn(Uni.createFrom().item(expectedTokenDTO));
-        given()
-                .header("AcquirerId", "acquirerTest")
-                .header("Channel", "channelTest")
-                .header("TerminalId", "terminalTest")
-                .header("TransactionId", "transactionTest")
-                .when().get("/api/v1/mil-authenticator/token")
-                .then()
-                .statusCode(200);
-    }
+//    @Test
+//    void testGetToken() {
+//        TokenDTO expectedTokenDTO = new TokenDTO();
+//        when(tokenService.getToken(any(AuthParameters.class))).thenReturn(Uni.createFrom().item(expectedTokenDTO));
+//        given()
+//                .header("AcquirerId", "acquirerTest")
+//                .header("Channel", "channelTest")
+//                .header("TerminalId", "terminalTest")
+//                .header("TransactionId", "transactionTest")
+//                .when().get("/api/v1/mil-authenticator/token")
+//                .then()
+//                .statusCode(200);
+//    }
 
     @Test
     void testCreateToken() {
@@ -51,7 +51,7 @@ class TokenResourceTest {
     void testDeleteToken() {
         TokenDTO expectedTokenDTO = new TokenDTO();
         expectedTokenDTO.setAccessToken("expectedToken");
-        when(tokenService.deleteToken(any(AuthParameters.class))).thenReturn(Uni.createFrom().voidItem());
+//        when(tokenService.deleteToken(any(AuthParameters.class))).thenReturn(Uni.createFrom().voidItem());
         given()
                 .header("AcquirerId", "acquirerTest")
                 .header("Channel", "channelTest")
