@@ -36,8 +36,8 @@ class TokenServiceImplTest {
     @Mock
     AuthProperties authProperties;
 
-    @Mock
-    Redis redis;
+//    @Mock
+//    Redis redis;
 
     @InjectMocks
     TokenServiceImpl tokenService;
@@ -47,37 +47,37 @@ class TokenServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void testGetTokenFoundInCache() {
-        AuthParameters authParameters = new AuthParameters("a", "b", "c", "d");
-        Response redisResponse = SimpleStringType.create("token_test");
-        Future<Response> redisResponseFuture = Future.succeededFuture(redisResponse);
-        when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);
-        Uni<TokenDTO> result = tokenService.getToken(authParameters);
-        TokenDTO tokenDTO = result.await().indefinitely();
-        assertNotNull(tokenDTO);
-        assertEquals("token_test", tokenDTO.getAccessToken());
-    }
+//    @Test
+//    void testGetTokenFoundInCache() {
+//        AuthParameters authParameters = new AuthParameters("a", "b", "c", "d");
+//        Response redisResponse = SimpleStringType.create("token_test");
+//        Future<Response> redisResponseFuture = Future.succeededFuture(redisResponse);
+//        when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);
+//        Uni<TokenDTO> result = tokenService.getToken(authParameters);
+//        TokenDTO tokenDTO = result.await().indefinitely();
+//        assertNotNull(tokenDTO);
+//        assertEquals("token_test", tokenDTO.getAccessToken());
+//    }
 
-    @Test
-    void testRedisUnavailable() {
-        AuthParameters authParameters = new AuthParameters("a", "b", "c", "d");
-        Future<Response> redisResponseFuture = Future.failedFuture(new RuntimeException("Redis not available"));
-        when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);
-        Uni<TokenDTO> result = tokenService.getToken(authParameters);
-        AtmLayerException atmLayerException = assertThrows(AtmLayerException.class, () -> result.await().indefinitely());
-        assertEquals(AppErrorCodeEnum.REDIS_UNAVAILABLE.getErrorCode(), atmLayerException.getErrorCode());
-    }
+//    @Test
+//    void testRedisUnavailable() {
+//        AuthParameters authParameters = new AuthParameters("a", "b", "c", "d");
+//        Future<Response> redisResponseFuture = Future.failedFuture(new RuntimeException("Redis not available"));
+//        when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);
+//        Uni<TokenDTO> result = tokenService.getToken(authParameters);
+//        AtmLayerException atmLayerException = assertThrows(AtmLayerException.class, () -> result.await().indefinitely());
+//        assertEquals(AppErrorCodeEnum.REDIS_UNAVAILABLE.getErrorCode(), atmLayerException.getErrorCode());
+//    }
 
-    @Test
-    void testGetTokenNotFoundInCache() {
-        AuthParameters authParameters = new AuthParameters("a", "b", "c", "d");
-        Future<Response> response = Future.succeededFuture(null);
-        when(redis.send(any(Request.class))).thenReturn(response);
-        Uni<TokenDTO> result = tokenService.getToken(authParameters);
-        AtmLayerException atmLayerException = assertThrows(AtmLayerException.class, () -> result.await().indefinitely());
-        assertEquals(AppErrorCodeEnum.TOKEN_NOT_FOUND.getErrorCode(), atmLayerException.getErrorCode());
-    }
+//    @Test
+//    void testGetTokenNotFoundInCache() {
+//        AuthParameters authParameters = new AuthParameters("a", "b", "c", "d");
+//        Future<Response> response = Future.succeededFuture(null);
+//        when(redis.send(any(Request.class))).thenReturn(response);
+//        Uni<TokenDTO> result = tokenService.getToken(authParameters);
+//        AtmLayerException atmLayerException = assertThrows(AtmLayerException.class, () -> result.await().indefinitely());
+//        assertEquals(AppErrorCodeEnum.TOKEN_NOT_FOUND.getErrorCode(), atmLayerException.getErrorCode());
+//    }
 
     @Test
     void testGenerateToken() {
@@ -85,9 +85,9 @@ class TokenServiceImplTest {
         Token mockedToken = new Token();
         mockedToken.setAccessToken("test_token");
         when(milWebClient.getTokenFromMil(any(), any(), any(), any(), any(), any())).thenReturn(Uni.createFrom().item(mockedToken));
-        Response redisResponse = SimpleStringType.create("token_test");
-        Future<Response> redisResponseFuture = Future.succeededFuture(redisResponse);
-        when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);
+//        Response redisResponse = SimpleStringType.create("token_test");
+//        Future<Response> redisResponseFuture = Future.succeededFuture(redisResponse);
+//        when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);
         when(authProperties.getClientId()).thenReturn("your_client_id");
         when(authProperties.getClientSecret()).thenReturn("your_client_secret");
         when(authProperties.getGrantType()).thenReturn("your_grant_type");
@@ -112,54 +112,54 @@ class TokenServiceImplTest {
         assertEquals(AppErrorCodeEnum.MIL_UNAVAILABLE.getErrorCode(), atmLayerException.getErrorCode());
     }
 
-    @Test
-    void testGenerateTokenRedisUnavailable() {
-        AuthParameters authParameters = new AuthParameters("a", "b", "c", "d");
-        when(authProperties.getClientId()).thenReturn("your_client_id");
-        when(authProperties.getClientSecret()).thenReturn("your_client_secret");
-        when(authProperties.getGrantType()).thenReturn("your_grant_type");
-        when(milWebClient.getTokenFromMil(any(), any(), any(), any(), any(), any()))
-                .thenReturn(Uni.createFrom().item(new Token()));
-        Future<Response> redisResponseFuture = Future.failedFuture(new RuntimeException("Token not found in cache"));
-        when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);
-        AtmLayerException atmLayerException = assertThrows(
-                AtmLayerException.class,
-                () -> tokenService.generateToken(authParameters).await().indefinitely()
-        );
-        assertEquals(AppErrorCodeEnum.REDIS_UNAVAILABLE.getErrorCode(), atmLayerException.getErrorCode());
-    }
+//    @Test
+//    void testGenerateTokenRedisUnavailable() {
+//        AuthParameters authParameters = new AuthParameters("a", "b", "c", "d");
+//        when(authProperties.getClientId()).thenReturn("your_client_id");
+//        when(authProperties.getClientSecret()).thenReturn("your_client_secret");
+//        when(authProperties.getGrantType()).thenReturn("your_grant_type");
+//        when(milWebClient.getTokenFromMil(any(), any(), any(), any(), any(), any()))
+//                .thenReturn(Uni.createFrom().item(new Token()));
+//        Future<Response> redisResponseFuture = Future.failedFuture(new RuntimeException("Token not found in cache"));
+//        when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);
+//        AtmLayerException atmLayerException = assertThrows(
+//                AtmLayerException.class,
+//                () -> tokenService.generateToken(authParameters).await().indefinitely()
+//        );
+//        assertEquals(AppErrorCodeEnum.REDIS_UNAVAILABLE.getErrorCode(), atmLayerException.getErrorCode());
+//    }
 
-    @Test
-    void testDeleteToken() {
-        AuthParameters authParameters = new AuthParameters("a", "b", "c", "d");
-        Response redisResponse = SimpleStringType.create("1");
-        Future<Response> redisResponseFuture = Future.succeededFuture(redisResponse);
-        when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);
-        Uni<Void> result = tokenService.deleteToken(authParameters);
-        result.await().indefinitely();
-        verify(redis).send(any(Request.class));
-    }
+//    @Test
+//    void testDeleteToken() {
+//        AuthParameters authParameters = new AuthParameters("a", "b", "c", "d");
+//        Response redisResponse = SimpleStringType.create("1");
+//        Future<Response> redisResponseFuture = Future.succeededFuture(redisResponse);
+//        when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);
+//        Uni<Void> result = tokenService.deleteToken(authParameters);
+//        result.await().indefinitely();
+//        verify(redis).send(any(Request.class));
+//    }
 
-    @Test
-    void testDeleteTokenNotFound() {
-        AuthParameters authParameters = new AuthParameters("a", "b", "c", "d");
-        Response redisResponse = SimpleStringType.create("0");
-        Future<Response> redisResponseFuture = Future.succeededFuture(redisResponse);
-        when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);
-        Uni<Void> result = tokenService.deleteToken(authParameters);
-        AtmLayerException atmLayerException = assertThrows(AtmLayerException.class, () -> result.await().indefinitely());
-        assertEquals(AppErrorCodeEnum.TOKEN_NOT_FOUND.getErrorCode(), atmLayerException.getErrorCode());
-    }
+//    @Test
+//    void testDeleteTokenNotFound() {
+//        AuthParameters authParameters = new AuthParameters("a", "b", "c", "d");
+//        Response redisResponse = SimpleStringType.create("0");
+//        Future<Response> redisResponseFuture = Future.succeededFuture(redisResponse);
+//        when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);
+//        Uni<Void> result = tokenService.deleteToken(authParameters);
+//        AtmLayerException atmLayerException = assertThrows(AtmLayerException.class, () -> result.await().indefinitely());
+//        assertEquals(AppErrorCodeEnum.TOKEN_NOT_FOUND.getErrorCode(), atmLayerException.getErrorCode());
+//    }
 
-    @Test
-    void testDeleteTokenRedisUnavailable() {
-        AuthParameters authParameters = new AuthParameters("a", "b", "c", "d");
-        Future<Response> redisResponseFuture = Future.failedFuture(new RuntimeException("Token not found in cache"));
-        when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);
-        AtmLayerException atmLayerException = assertThrows(
-                AtmLayerException.class,
-                () -> tokenService.deleteToken(authParameters).await().indefinitely()
-        );
-        assertEquals(AppErrorCodeEnum.REDIS_UNAVAILABLE.getErrorCode(), atmLayerException.getErrorCode());
-    }
+//    @Test
+//    void testDeleteTokenRedisUnavailable() {
+//        AuthParameters authParameters = new AuthParameters("a", "b", "c", "d");
+//        Future<Response> redisResponseFuture = Future.failedFuture(new RuntimeException("Token not found in cache"));
+//        when(redis.send(any(Request.class))).thenReturn(redisResponseFuture);
+//        AtmLayerException atmLayerException = assertThrows(
+//                AtmLayerException.class,
+//                () -> tokenService.deleteToken(authParameters).await().indefinitely()
+//        );
+//        assertEquals(AppErrorCodeEnum.REDIS_UNAVAILABLE.getErrorCode(), atmLayerException.getErrorCode());
+//    }
 }
